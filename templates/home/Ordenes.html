@@ -1,0 +1,42 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h2>Ordenes abiertas</h2>
+    <br>
+    <br>
+    <a href="{% url 'orden_nueva' %}" class="btn btn-outline-info">Nuevo orden</a>
+</div>
+
+<div class="container-sm" style="max-width: 1200px;">
+    <table class="table table-striped">
+        <thead>
+            <th>Numero de Orden</th>
+            <th>Bebidas en la Orden</th>
+            <th>Total</th>
+            <th>Cliente</th>
+            <th>Ver</th>
+            <th>Eliminar</th>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.id }}</td>
+                    <td>{{ venta.detalleventa_set.count }}</td>
+                    <td>{{ venta.total }}</td>
+                    <td>{{ venta.cliente }}</td>
+                    <td>
+                        <a href="{% url 'ver_orden' venta.id %}" class="btn btn-outline-primary">Ver</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'eliminar_orden' venta.id %}" class="btn btn-outline-danger">Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+
+

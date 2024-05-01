@@ -1,0 +1,52 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Actualizar Bebida</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'bebida_actualizar' bebida_id=bebida_id %}" class="mt-4" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ form.nombre.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="categoria" class="form-label">Categoría:</label>
+            <select class="form-select" id="categoria" name="categoria">
+                <option value="">Ninguna</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if categoria.id == form.categoria.value %} selected {% endif %}>{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen:</label>
+            <input type="file" class="form-control" id="imagen" name="imagen">
+        </div>
+        <div class="mb-3">
+            <label for="ingredientes" class="form-label">Ingredientes:</label>
+            <div class="form-check">
+                {% for ingrediente in ingredientes %}
+                    <input class="form-check-input" type="checkbox" id="ingrediente_{{ ingrediente.id }}" name="ingredientes" value="{{ ingrediente.id }}" {% if ingrediente in form.ingredientes.all %} checked {% endif %}>
+                    <label class="form-check-label" for="ingrediente_{{ ingrediente.id }}">{{ ingrediente.nombre }}</label><br>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="precio_base" class="form-label">Precio Base:</label>
+            <input type="number" class="form-control" id="precio_base" name="precio_base" value="{{ form.precio_base.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles:</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3">{{ form.detalles.value }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar Bebida</button>
+        <a href="{% url 'bebidas' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
+
+
+

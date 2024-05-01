@@ -1,0 +1,34 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Actualizar cliente</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'clientes_actualizar' cliente_id=cliente_id %}" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ form.nombre.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_apellido" class="form-label">Apellido:</label>
+            <input type="text" class="form-control" id="id_apellido" name="apellido" value="{{ form.apellido.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_telefono" class="form-label">Teléfono:</label>
+            <input type="text" class="form-control" id="id_telefono" name="telefono" value="{{ form.telefono.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_correo" class="form-label">Correo electrónico:</label>
+            <input type="email" class="form-control" id="id_correo" name="correo" value="{{ form.correo.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_puntos" class="form-label">Puntos:</label>
+            <input type="number" class="form-control" id="id_puntos" name="puntos" value="{{ form.puntos.value }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar cliente</button>
+        <a href="{% url 'clientes' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock content %}

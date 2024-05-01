@@ -1,0 +1,76 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal</title>
+    <style>
+        h1 {
+            text-align: center;
+        }
+        .custom-btn {
+            height: 195px;
+            width: 200px; 
+            line-height: 22;
+        }
+        .text-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Menú Principal</h1>
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        <a href="{% url 'ordenes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/ordenes.png' %}'); background-size: cover;"></a>
+                    </td>
+                        <td class="text-center">
+                        <a href="{% url 'clientes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/cliente.png' %}'); background-size: cover;"></a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'proveedores' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/1198280.png' %}'); background-size: cover;"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center text-title">Ordenes</td> 
+                    <td class="text-center text-title">Clientes</td>
+                    <td class="text-center text-title">Proveedores</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-borderless">
+            <tbody>
+                <tr>
+                    <td class="text-center">
+                        <a href="{% url 'inventario' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/inventario.png' %}'); background-size: cover;"></a>
+                    </td>
+                        <td class="text-center">
+                        <a href="#" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/repo.png' %}'); background-size: cover;"></a>
+                    </td>
+                    <td class="text-center">
+                        <a href="{% url 'bebidas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/coffee.png' %}'); background-size: cover;"></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center text-title">Inventario</td> 
+                    <td class="text-center text-title">Reportes</td>
+                    <td class="text-center text-title">Bebidas</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock content %}
+
+

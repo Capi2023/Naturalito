@@ -1,0 +1,69 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Clientes</h1>
+    <br>
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="{% url 'clientes_nuevo' %}" class="btn btn-outline-info"> Nuevo cliente </a>
+        <div class="input-group" style="max-width: 250px;">
+            <input type="text" class="form-control" placeholder=" Teléfono" aria-label="Buscar por teléfono" aria-describedby="buscar-cliente" id="input-telefono" style="padding: 0px;"> <!-- Added id attribute for easy selection -->
+            <button class="btn btn-outline-secondary" type="button" id="buscar-cliente">Buscar</button>
+        </div>
+    </div>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <table class="table table-striped">
+        <thead>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Numero telefonico</th>
+            <th>Puntos</th>
+            <th>Actualizar</th>
+            <th>Eliminar</th>
+        </thead>
+        <tbody>
+            {% for item in clientes %}
+            <tr>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.apellido }}</td>
+                <td>{{ item.telefono }}</td>
+                <td>{{ item.puntos }}</td>
+                <td><a href="{% url 'clientes_actualizar' cliente_id=item.id %}" class="btn btn-outline-warning">Actualizar</a></td>
+                <td><button class="btn btn-outline-danger delete-btn" data-id="{{ item.id }}">Eliminar</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const inputTelefono = document.getElementById('input-telefono');
+
+    inputTelefono.addEventListener('input', function() {
+        const telefono = this.value.trim().toLowerCase();
+        
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const telefonoCliente = row.querySelector('td:nth-child(3)').innerText.toLowerCase();
+            if (telefonoCliente.includes(telefono)) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const clienteId = this.getAttribute('data-id');
+            const confirmacion = confirm('¿Estás seguro de que quieres eliminar este cliente?');
+            if (confirmacion) {
+                window.location.href = `/clientes/eliminar/${clienteId}/`;
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

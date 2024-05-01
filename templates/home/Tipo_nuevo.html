@@ -1,0 +1,22 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Agregar Nuevo Tipo</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'tipo_nuevo' %}" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre">
+        </div>
+        <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles:</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Tipo</button>
+        <a href="{% url 'inventario' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock content %}

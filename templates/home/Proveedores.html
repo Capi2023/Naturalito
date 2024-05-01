@@ -1,0 +1,50 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Proveedores</h1>
+    <br>
+    <a href="{% url 'proveedores_nuevo' %}" class="btn btn-outline-info">Nuevo proveedor</a>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Compañía</th>
+                <th>Dirección</th>
+                <th>Correo</th>
+                <th>Número de teléfono</th>
+                <th>Actualizar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+                <td>{{ proveedor.nombre }}</td>
+                <td>{{ proveedor.compañia }}</td>
+                <td>{{ proveedor.direccion }}</td>
+                <td>{{ proveedor.correo }}</td>
+                <td>{{ proveedor.numero }}</td>
+                <td><a href="{% url 'proveedores_actualizar' proveedor_id=proveedor.id %}" class="btn btn-outline-warning">Actualizar</a></td>
+                <td><button class="btn btn-outline-danger delete-btn" data-id="{{ proveedor.id }}">Eliminar</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const proveedorId = this.getAttribute('data-id');
+            const confirmacion = confirm('¿Estás seguro de que quieres eliminar este proveedor?');
+            if (confirmacion) {
+                window.location.href = `/proveedores/eliminar/${proveedorId}/`;
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,71 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Actualizar Ingrediente</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'inventario_actualizar' ingrediente_id=ingrediente_id %}" class="mt-4" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ form.nombre.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo:</label>
+            <select class="form-select" id="tipo" name="tipo">
+                <option value="">Ninguno</option>
+                {% for tipo in tipos %}
+                    <option value="{{ tipo.id }}" {% if tipo.id == form.tipo.value %} selected {% endif %}>{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen:</label>
+            <input type="file" class="form-control" id="imagen" name="imagen">
+        </div>
+        <div class="mb-3">
+            <label for="precio_extra" class="form-label">Precio extra:</label>
+            <input type="number" class="form-control" id="precio_extra" name="precio_extra" value="{{ form.precio_extra.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="cantidad_extra" class="form-label">Cantidad extra:</label>
+            <input type="number" class="form-control" id="cantidad_extra" name="cantidad_extra" value="{{ form.cantidad_extra.value }}">
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="cantidad_disponible" class="form-label">Cantidad disponible:</label>
+                    <input type="number" class="form-control" id="cantidad_disponible" name="cantidad_disponible" value="{{ form.cantidad_disponible.value }}">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="cantidad_a_anadir" class="form-label">Cantidad a añadir:</label>
+                    <input type="number" class="form-control" id="cantidad_a_anadir" name="cantidad_a_anadir" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="cantidad_minima" class="form-label">Cantidad mínima:</label>
+            <input type="number" class="form-control" id="cantidad_minima" name="cantidad_minima" value="{{ form.cantidad_minima.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="proveedor" class="form-label">Proveedor:</label>
+            <select class="form-select" id="proveedor" name="proveedor">
+                <option value="">Ninguno</option>
+                {% for proveedor in proveedores %}
+                    <option value="{{ proveedor.id }}" {% if proveedor.id == form.proveedor.value %} selected {% endif %}>{{ proveedor.compañia }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles:</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3">{{ form.detalles.value }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar Ingrediente</button>
+        <a href="{% url 'inventario' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+

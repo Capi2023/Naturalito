@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Naturalito</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background-color: #343a40;
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #ffffff !important;
+        }
+
+        .navbar-toggler-icon {
+            background-color: #ffffff;
+        }
+
+        .container-fluid {
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .menu-section {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .restaurant-photos {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .photo-item {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .photo-item img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .footer {
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Naturalito</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login_user' %}">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="logo-container">
+            <img src="{% static 'images\1198280.png' %}" alt="Restaurant Logo" style="max-width: 200px; max-height: 200px;">
+        </div>
+        <div class="menu-section">
+            <h2>Nuestro menu</h2>
+            <div class="photo-item">
+                <img src="{% static 'images\mimenu.jpg' %}" alt="Restaurant Photo 1">
+            </div>
+            <div class="photo-item">
+                <img src="{% static 'images\mimenu.jpg' %}" alt="Restaurant Photo 1">
+            </div>
+            <div class="photo-item">
+                <img src="{% static 'images\mimenu.jpg' %}" alt="Restaurant Photo 1">
+            </div>
+        </div>
+
+        <div class="restaurant-photos">
+            <h2>Fotos del restaurante</h2>
+            <div class="photo-item">
+                <img src="{% static 'images\afuera.jpg' %}" alt="Restaurant Photo 1">
+            </div>
+            <div class="photo-item">
+                <img src="{% static 'images\afuera.jpg' %}" alt="Restaurant Photo 2">
+            </div>
+            <div class="photo-item">
+                <img src="{% static 'images\afuera.jpg' %}" alt="Restaurant Photo 3">
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 Naturalito - All Rights Reserved</p>
+    </footer>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+</body>
+
+</html>
+
+

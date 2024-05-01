@@ -1,0 +1,46 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Crear cliente nuevo</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    <form method="post" action="{% url 'clientes_nuevo' %}" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="nombre" name="nombre">
+        </div>
+        <div class="mb-3">
+            <label for="apellido" class="form-label">Apellido:</label>
+            <input type="text" class="form-control" id="apellido" name="apellido">
+        </div>
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono:</label>
+            <input type="text" class="form-control" id="telefono" name="telefono">
+        </div>
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo electrónico:</label>
+            <input type="email" class="form-control" id="correo" name="correo">
+        </div>
+        <div class="mb-3">
+            <label for="puntos" class="form-label">Puntos:</label>
+            <input type="number" class="form-control" id="puntos" name="puntos">
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Cliente</button>
+        <a href="{% url 'clientes' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+{% endblock content %}
+

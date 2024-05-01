@@ -1,0 +1,82 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Inventario</h1>
+    <br>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <a href="{% url 'inventario_nuevo' %}" class="btn btn-outline-info"> Nuevo ingrediente </a>
+            <a href="{% url 'tipo_nuevo' %}" class="btn btn-outline-info mx-2"> Nuevo tipo de ingrediente </a>
+        </div>
+        <div class="input-group" style="max-width: 350px;">
+            <input type="text" class="form-control" placeholder=" Buscar por nombre" aria-label="Buscar por nombre" aria-describedby="buscar-ingrediente" id="input-nombre" style="padding: 0px;"> <!-- Agregado el atributo id para facilitar la selección -->
+            <button class="btn btn-outline-secondary" type="button" id="buscar-ingrediente">Buscar</button>
+        </div>
+    </div>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <table class="table table-striped">
+        <thead>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Imagen</th>
+            <th>Proveedor</th>
+            <th>Cantidad disponible</th>
+            <th>Precio extra</th>
+            <th>Cantidad extra</th>
+            <th>Cantidad mínima</th>
+            <th>Actualizar</th>
+            <th>Eliminar</th>
+        </thead>
+        <tbody>
+            {% for ingrediente in ingredientes %}
+            <tr>
+                <td>{{ ingrediente.nombre }}</td>
+                <td>{{ ingrediente.tipo }}</td>
+                <td>
+                    <img src="{{ ingrediente.imagen.url }}" alt="" style="max-width: 100px; max-height: 100px;">
+                </td>
+                <td>{{ ingrediente.proveedor }}</td>
+                <td>{{ ingrediente.cantidad_disponible }}</td>
+                <td>{{ ingrediente.precio_extra }}</td>
+                <td>{{ ingrediente.cantidad_extra }}</td>
+                <td>{{ ingrediente.cantidad_minima }}</td>
+                <td><a href="{% url 'inventario_actualizar' ingrediente_id=ingrediente.id %}" class="btn btn-outline-warning">Actualizar</a></td>
+                <td><button class="btn btn-outline-danger delete-btn" data-id="{{ ingrediente.id }}">Eliminar</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const inputNombre = document.getElementById('input-nombre');
+
+    inputNombre.addEventListener('input', function() {
+        const nombre = this.value.trim().toLowerCase();
+        
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const nombreIngrediente = row.querySelector('td:nth-child(1)').innerText.toLowerCase();
+            if (nombreIngrediente.includes(nombre)) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const ingredienteId = this.getAttribute('data-id');
+            const confirmacion = confirm('¿Estás seguro de que quieres eliminar este ingrediente?');
+            if (confirmacion) {
+                window.location.href = `/inventario/eliminar/${ingredienteId}/`;
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

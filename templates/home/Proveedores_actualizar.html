@@ -1,0 +1,34 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Actualizar proveedor</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'proveedores_actualizar' proveedor_id=proveedor_id %}" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_nombre" class="form-label">Nombre:</label>
+            <input type="text" class="form-control" id="id_nombre" name="nombre" value="{{ form.nombre.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_compañia" class="form-label">Compañía:</label>
+            <input type="text" class="form-control" id="id_compañia" name="compañia" value="{{ form.compañia.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_direccion" class="form-label">Dirección:</label>
+            <input type="text" class="form-control" id="id_direccion" name="direccion" value="{{ form.direccion.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_correo" class="form-label">Correo electrónico:</label>
+            <input type="email" class="form-control" id="id_correo" name="correo" value="{{ form.correo.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_numero" class="form-label">Número de teléfono:</label>
+            <input type="text" class="form-control" id="id_numero" name="numero" value="{{ form.numero.value }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Actualizar proveedor</button>
+        <a href="{% url 'proveedores' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock content %}

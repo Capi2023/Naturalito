@@ -1,0 +1,82 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Bebidas</h1>
+    <br>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <a href="{% url 'bebida_nueva' %}" class="btn btn-outline-info"> Nueva bebida </a>
+            <a href="{% url 'categoria_nueva' %}" class="btn btn-outline-info mx-2"> Nueva categoría de bebida </a>
+        </div>
+        <div class="input-group" style="max-width: 350px;">
+            <input type="text" class="form-control" placeholder=" Buscar por nombre" aria-label="Buscar por nombre" aria-describedby="buscar-bebida" id="input-nombre" style="padding: 0px;"> <!-- Agregado el atributo id para facilitar la selección -->
+            <button class="btn btn-outline-secondary" type="button" id="buscar-bebida">Buscar</button>
+        </div>
+    </div>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <table class="table table-striped">
+        <thead>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Imagen</th>
+            <th>Ingredientes</th>
+            <th>Precio base</th>
+            <th>Actualizar</th>
+            <th>Eliminar</th>
+        </thead>
+        <tbody>
+            {% for bebida in bebidas %}
+            <tr>
+                <td>{{ bebida.nombre }}</td>
+                <td>{{ bebida.categoria }}</td>
+                <td>
+                    <img src="{{ bebida.imagen.url }}" alt="" style="max-width: 100px; max-height: 100px;">
+                </td>
+                <td>
+                    <ul>
+                        {% for ingrediente in bebida.ingredientes.all %}
+                        <li>{{ ingrediente.nombre }}</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>{{ bebida.precio_base }}</td>
+                <td><a href="{% url 'bebida_actualizar' bebida_id=bebida.id %}" class="btn btn-outline-warning">Actualizar</a></td>
+                <td><button class="btn btn-outline-danger delete-btn" data-id="{{ bebida.id }}">Eliminar</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const inputNombre = document.getElementById('input-nombre');
+
+    inputNombre.addEventListener('input', function() {
+        const nombre = this.value.trim().toLowerCase();
+
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const nombreBebida = row.querySelector('td:nth-child(1)').innerText.toLowerCase();
+            if (nombreBebida.includes(nombre)) {
+                row.style.display = 'table-row';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const bebidaId = this.getAttribute('data-id');
+            const confirmacion = confirm('¿Estás seguro de que quieres eliminar esta bebida?');
+            if (confirmacion) {
+                window.location.href = `/bebidas/eliminar/${bebidaId}/`;
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

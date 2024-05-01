@@ -1,0 +1,235 @@
+{% extends "home/base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="tabs">
+                <form id="categoria-form" method="post" style="display: none;">
+                    {% csrf_token %}
+                    <input type="hidden" id="categoria" name="categoria">
+                </form>
+                <div class="btn-group" role="group" aria-label="Categorías">
+                    {% for categoria in categorias %}
+                    <button type="button" class="btn btn-outline-primary {% if forloop.first %}active{% endif %}" onclick="openTab(event, '{{ categoria.nombre }}')">{{ categoria.nombre }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% for categoria in categorias %}
+            <div id="{{ categoria.nombre }}" class="tabcontent {% if forloop.first %}active{% endif %} otrocolor" style="display:block;">
+                <div class="row">
+                    {% for bebida in bebidas %}
+                    {% if bebida.categoria.nombre == categoria.nombre %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card">
+                            <img src="{{ bebida.imagen.url }}" class="card-img-top boton-imagen" alt="{{ bebida.nombre }}" onclick="mostrarVentana('{{ bebida.id }}')">
+                            <div class="card-body" style="height: 150px;">
+                                <h5 class="card-title">{{ bebida.nombre }}</h5>
+                                <p class="card-text">Precio: {{ bebida.precio_base }}</p>
+                                <div id="ventana-{{ bebida.id }}" class="ventana" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; border-radius: 10px; padding: 20px; background-color: white; width: 80%;">
+                                    <button type="button" class="btn-close" aria-label="Close" onclick="ocultarVentana('{{ bebida.id }}')" style="position: absolute; top: 10px; right: 10px;"></button>
+                                    <h4>Ingredientes de {{ bebida.nombre }}</h4>
+                                    <div id="ingredientes-{{ bebida.id }}" class="ingredientes-container overflow-auto" style="max-height: 700px; border: 1px solid #ddd; border-radius: 10px; padding: 10px;">
+                                        <!-- ingredientes -->
+                                        {% for tipo in tipos %}
+                                        <div class="card mb-3">
+                                            <h5 class="card-header">{{ tipo.nombre }}</h5>
+                                            <div class="card-body tipo-ingredientes">
+                                                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5">
+                                                    {% for ingrediente in ingredientes %}
+                                                    {% if ingrediente.tipo == tipo %}
+                                                    <div class="col mb-4" id="ingrediente-{{ ingrediente.id }}">
+                                                        <div class="card">
+                                                            <img src="{{ ingrediente.imagen.url }}" class="card-img-top mx-auto" alt="{{ ingrediente.nombre }}" style="max-width: 100px; max-height: 100px;">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">{{ ingrediente.nombre }}</h6>
+                                                                <div class="input-group">
+                                                                    <button class="btn btn-outline-secondary" type="button" onclick="restarCantidad('{{ ingrediente.id }}')">-</button>
+                                                                    <input type="number" class="form-control" id="cantidad-{{ ingrediente.id }}" value="0" readonly>
+                                                                    <button class="btn btn-outline-secondary" type="button" onclick="sumarCantidad('{{ ingrediente.id }}')">+</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mt-3" style="text-align: right;">
+                                        <button class="btn btn-success" onclick="guardarIngredientes('{{ bebida.id }}')">Guardar</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-md-4">
+            <div class="venta">
+                <h2>Venta</h2>
+                <ul id="bebidas-seleccionadas">
+                    <!-- Aquí se mostrarán las bebidas seleccionadas -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        evt.currentTarget.classList.add("active");
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById('categoria').value = tabName;
+        localStorage.setItem('activeTab', tabName);
+
+    }
+
+
+    function mostrarVentana(bebidaId) {
+        var ventana = document.getElementById('ventana-' + bebidaId);
+        ventana.style.display = 'block';
+        $.ajax({
+            url: `/bebida/${bebidaId}/ingredientes/`,
+            method: 'GET',
+            success: function(response) {
+                console.log(response);
+                var ingredientesHtml = '';
+                response.ingredientes.forEach(function(ingrediente) {
+                    ingredientesHtml += `<p>${ingrediente}</p>`;
+                });
+                document.getElementById('ingredientes-' + bebidaId).innerHTML = ingredientesHtml;
+            },
+            error: function(xhr, errmsg, err) {
+                console.error('Error al obtener ingredientes:', errmsg);
+            }
+        });
+    }
+
+
+    function ocultarVentana(bebidaId) {
+        var ventana = document.getElementById('ventana-' + bebidaId);
+        ventana.style.display = 'none';
+    }
+
+
+    function ocultarBebidasNoActivas() {
+        var tabs = document.getElementsByClassName("tabcontent");
+        for (var i = 0; i < tabs.length; i++) {
+            if (!tabs[i].classList.contains("active")) {
+                tabs[i].style.display = "none";
+            }
+        }
+    }
+    
+
+    function activarPrimeraPestana() {
+        var activeTab = localStorage.getItem('activeTab');
+        var tabs = document.getElementsByClassName("tabcontent");
+        var tablinks = document.getElementsByClassName("btn");
+        if (activeTab) {
+            for (var i = 0; i < tabs.length; i++) {
+                if (tabs[i].id === activeTab) {
+                    tabs[i].style.display = "block";
+                } else {
+                    tabs[i].style.display = "none";
+                }
+            }
+            for (var j = 0; j < tablinks.length; j++) {
+                if (tablinks[j].getAttribute('onclick').includes(activeTab)) {
+                    tablinks[j].classList.add("active");
+                } else {
+                    tablinks[j].classList.remove("active");
+                }
+            }
+        } else {
+            
+            tabs[0].style.display = "block";
+            tablinks[0].classList.add("active");
+        }
+    }
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        ocultarBebidasNoActivas();
+        activarPrimeraPestana();
+    });
+
+
+    function seleccionarIngrediente(ingredienteId) {
+        var cantidad = prompt("Ingrese la cantidad de este ingrediente:");
+        if (cantidad !== null) {
+            $.ajax({
+                url: `/agregar_ingrediente/${bebidaId}/${ingredienteId}/${cantidad}/`,
+                method: 'GET',  // Puedes cambiar a 'POST' si lo prefieres
+                success: function(response) {
+                    console.log(response);
+                    // Actualizar la interfaz de usuario para reflejar las bebidas seleccionadas
+                    var bebidaSeleccionadaHtml = `<li>${response.mensaje}</li>`;
+                    $('#bebidas-seleccionadas').append(bebidaSeleccionadaHtml);
+                    
+                    // Resaltar el ingrediente seleccionado
+                    $(`#ingrediente-${ingredienteId}`).addClass('ingrediente-seleccionado');
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error('Error al agregar ingrediente:', errmsg);
+                }
+            });
+        }
+    }
+
+    var cantidades = {}; // Objeto para almacenar las cantidades de ingredientes seleccionados
+
+    function sumarCantidad(ingredienteId) {
+        if (cantidades[ingredienteId] === undefined) {
+            cantidades[ingredienteId] = 0;
+        }
+        cantidades[ingredienteId]++;
+        actualizarCantidad(ingredienteId);
+    }
+
+    function restarCantidad(ingredienteId) {
+        if (cantidades[ingredienteId] === undefined || cantidades[ingredienteId] <= 0) {
+            return;
+        }
+        cantidades[ingredienteId]--;
+        actualizarCantidad(ingredienteId);
+    }
+
+    function actualizarCantidad(ingredienteId) {
+        var cantidadInput = document.getElementById('cantidad-' + ingredienteId);
+        cantidadInput.value = cantidades[ingredienteId];
+    }
+
+    function guardarIngredientes(bebidaId) {
+        // Envía las cantidades de ingredientes seleccionados al servidor
+        var ingredientesSeleccionados = [];
+        for (var ingredienteId in cantidades) {
+            if (cantidades.hasOwnProperty(ingredienteId) && cantidades[ingredienteId] > 0) {
+                ingredientesSeleccionados.push({ id: ingredienteId, cantidad: cantidades[ingredienteId] });
+            }
+        }
+        console.log(ingredientesSeleccionados); // Enviar ingredientesSeleccionados al servidor mediante AJAX u otro método
+    }
+
+
+</script>
+
+
+{% endblock content %}
+
