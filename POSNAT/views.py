@@ -5,6 +5,7 @@ from django.db import transaction
 from .models import *
 from .decorators import *
 from .forms import *
+from django.http import JsonResponse
 
 
 def prueba(request):
@@ -152,6 +153,16 @@ def inventario_actualizar(request, ingrediente_id):
     return render(request, 'home/Inventario_actualizar.html', {'form': form, 'ingrediente_id': ingrediente.id, 'tipos': tipos, 'proveedores': proveedores})
 
 
+def obtener_ingredientes_por_tipo(request):
+    if request.method == 'GET':
+        tipo_id = request.GET.get('tipo_id')
+        if tipo_id:
+            ingredientes = Ingrediente.objects.filter(tipo_id=tipo_id)
+            data = [{'id': ingrediente.id, 'nombre': ingrediente.nombre} for ingrediente in ingredientes]
+            return JsonResponse(data, safe=False)
+    return JsonResponse({'error': 'Error en la solicitud'}, status=400)
+
+
 @agregar_ingrediente
 def agregar_ingrediente_a_bebida(request, bebida_id, ingrediente_id, cantidad):
     bebida = get_object_or_404(Bebida, pk=bebida_id)
@@ -243,7 +254,6 @@ def categoria_nueva(request):
         form = CategoriaForm()
     return render(request, 'home/Categoria_nueva.html', {'form': form})
 
-
 def orden_nueva(request):
     ingredientes = Ingrediente.objects.all()
     tipos = Tipo.objects.all()
@@ -254,8 +264,40 @@ def orden_nueva(request):
         categoria_seleccionada = request.POST.get('categoria')
         if categoria_seleccionada:
             bebidas = Bebida.objects.filter(categoria__nombre=categoria_seleccionada)
+        else:
+            bebida_id = request.POST.get('bebida_id')
+            bebida = Bebida.objects.get(pk=bebida_id)
+            cantidad = int(request.POST.get('cantidad'))
+            precio_unitario = bebida.precio_base
+            # Creamos un objeto DetalleVenta y lo guardamos
+            detalle_venta = DetalleVenta.objects.create(bebida=bebida, cantidad=cantidad, precio_unitario=precio_unitario)
+            # Añadimos el detalle de venta a la lista de detalles de la venta actual
+            if 'venta_detalles' not in request.session:
+                request.session['venta_detalles'] = []
+            request.session['venta_detalles'].append(detalle_venta.id)
 
     return render(request, 'home/Orden_nueva.html', {'categorias': categorias, 'bebidas': bebidas, 'ingredientes': ingredientes, 'tipos': tipos})
+
+
+def procesar_venta(request):
+    if request.method == 'POST' and 'confirmar_venta' in request.POST:
+        # Creamos un objeto Venta y lo guardamos
+        venta = Venta.objects.create(total=0)
+        # Recuperamos los detalles de venta de la sesión
+        detalles_ids = request.session.get('venta_detalles', [])
+        detalles_venta = DetalleVenta.objects.filter(id__in=detalles_ids)
+        # Asignamos la venta a los detalles de venta y los guardamos
+        for detalle_venta in detalles_venta:
+            detalle_venta.venta = venta
+            detalle_venta.save()
+        # Actualizamos el total de la venta
+        venta.total = venta.calcular_total()
+        venta.save()
+        # Limpiamos la sesión
+        request.session['venta_detalles'] = []
+        return JsonResponse({'success': True})  # Devuelve una respuesta JSON para indicar que la venta se procesó correctamente
+    else:
+        return JsonResponse({'success': False})  # Devuelve una respuesta JSON para indicar que hubo un error al procesar la venta
 
 
 def obtener_ingredientes(request):

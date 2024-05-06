@@ -1,33 +1,43 @@
-{% extends "home/base.html" %}
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="tabs">
+{% extends "home/base.html" %}  <!-- Extiende el layout base.html -->
+
+{% block content %}  <!-- Define un bloque llamado 'content' que será reemplazado en la plantilla base -->
+
+<div class="container">  <!-- Contenedor principal de la página -->
+    <div class="row">  <!-- Fila de la cuadrícula -->
+        <div class="col-md-8">  <!-- Columna principal, ocupa 8 de 12 columnas en pantallas medianas y grandes -->
+            <div class="tabs">  <!-- Contenedor de pestañas -->
+                <!-- Formulario para seleccionar categoría -->
                 <form id="categoria-form" method="post" style="display: none;">
                     {% csrf_token %}
                     <input type="hidden" id="categoria" name="categoria">
                 </form>
+                <!-- Botones de pestañas para cada categoría -->
                 <div class="btn-group" role="group" aria-label="Categorías">
                     {% for categoria in categorias %}
                     <button type="button" class="btn btn-outline-primary {% if forloop.first %}active{% endif %}" onclick="openTab(event, '{{ categoria.nombre }}')">{{ categoria.nombre }}</button>
                     {% endfor %}
                 </div>
             </div>
+            <!-- Contenido de cada pestaña -->
             {% for categoria in categorias %}
             <div id="{{ categoria.nombre }}" class="tabcontent {% if forloop.first %}active{% endif %} otrocolor" style="display:block;">
                 <div class="row">
+                    <!-- Loop sobre las bebidas de la categoría actual -->
                     {% for bebida in bebidas %}
                     {% if bebida.categoria.nombre == categoria.nombre %}
                     <div class="col-md-3 mb-3">
-                        <div class="card">
-                            <img src="{{ bebida.imagen.url }}" class="card-img-top boton-imagen" alt="{{ bebida.nombre }}" onclick="mostrarVentana('{{ bebida.id }}')">
-                            <div class="card-body" style="height: 150px;">
+                        <div class="card" style="height: 300px; width: 200px; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                            <!-- Imagen de la bebida -->
+                            <img src="{{ bebida.imagen.url }}" class="card-img-top boton-imagen" alt="{{ bebida.nombre }}" onclick="mostrarVentana('{{ bebida.id }}')" style="max-height: 100px; max-width: 100px; margin: auto;">
+                            <div class="card-body">
                                 <h5 class="card-title">{{ bebida.nombre }}</h5>
                                 <p class="card-text">Precio: {{ bebida.precio_base }}</p>
+                                <!-- Ventana modal para mostrar ingredientes -->
                                 <div id="ventana-{{ bebida.id }}" class="ventana" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 9999; border-radius: 10px; padding: 20px; background-color: white; width: 80%;">
+                                    <!-- Botón de cerrar -->
                                     <button type="button" class="btn-close" aria-label="Close" onclick="ocultarVentana('{{ bebida.id }}')" style="position: absolute; top: 10px; right: 10px;"></button>
                                     <h4>Ingredientes de {{ bebida.nombre }}</h4>
+                                    <!-- Contenido de los ingredientes -->
                                     <div id="ingredientes-{{ bebida.id }}" class="ingredientes-container overflow-auto" style="max-height: 700px; border: 1px solid #ddd; border-radius: 10px; padding: 10px;">
                                         <!-- ingredientes -->
                                         {% for tipo in tipos %}
@@ -36,27 +46,32 @@
                                             <div class="card-body tipo-ingredientes">
                                                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5">
                                                     {% for ingrediente in ingredientes %}
+                                                    <!-- Mostrar ingredientes según el tipo -->
                                                     {% if ingrediente.tipo == tipo %}
                                                     <div class="col mb-4" id="ingrediente-{{ ingrediente.id }}">
+                                                        <!-- Detalles del ingrediente -->
                                                         <div class="card">
                                                             <img src="{{ ingrediente.imagen.url }}" class="card-img-top mx-auto" alt="{{ ingrediente.nombre }}" style="max-width: 100px; max-height: 100px;">
                                                             <div class="card-body">
                                                                 <h6 class="card-title">{{ ingrediente.nombre }}</h6>
+                                                                <!-- Botones para ajustar la cantidad -->
                                                                 <div class="input-group">
                                                                     <button class="btn btn-outline-secondary" type="button" onclick="restarCantidad('{{ ingrediente.id }}')">-</button>
                                                                     <input type="number" class="form-control" id="cantidad-{{ ingrediente.id }}" value="0" readonly>
-                                                                    <button class="btn btn-outline-secondary" type="button" onclick="sumarCantidad('{{ ingrediente.id }}')">+</button>
+                                                                    <button class="btn btn-outline-secondary" type="button" onclick="sumarCantidad('{{ ingrediente.id }}', '{{ bebida.id }}')">+</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     {% endif %}
-                                                    {% endfor %}
+                                                {% endfor %}
+                                                
                                                 </div>
                                             </div>
                                         </div>
                                         {% endfor %}
                                     </div>
+                                    <!-- Botón para guardar ingredientes -->
                                     <div class="mt-3" style="text-align: right;">
                                         <button class="btn btn-success" onclick="guardarIngredientes('{{ bebida.id }}')">Guardar</button>
                                     </div>
@@ -71,6 +86,7 @@
             </div>
             {% endfor %}
         </div>
+        <!-- Columna lateral para la lista de ventas -->
         <div class="col-md-4">
             <div class="venta">
                 <h2>Venta</h2>
@@ -82,17 +98,21 @@
     </div>
 </div>
 
+<!-- Script para controlar el comportamiento de las pestañas y otras funcionalidades -->
 <script>
+    // Función para cambiar de pestaña
     function openTab(evt, tabName) {
-        var i, tabcontent, tablinks;
-        tabcontent = document.getElementsByClassName("tabcontent");
-        for (i = 0; i < tabcontent.length; i++) {
+        // Oculta todas las pestañas
+        var tabcontent = document.getElementsByClassName("tabcontent");
+        for (var i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
         }
-        tablinks = document.getElementsByClassName("btn");
-        for (i = 0; i < tablinks.length; i++) {
+        // Elimina la clase 'active' de todos los botones de pestaña
+        var tablinks = document.getElementsByClassName("btn");
+        for (var i = 0; i < tablinks.length; i++) {
             tablinks[i].classList.remove("active");
         }
+        // Muestra la pestaña actual y marca el botón de la pestaña como activo
         evt.currentTarget.classList.add("active");
         document.getElementById(tabName).style.display = "block";
         document.getElementById('categoria').value = tabName;
@@ -100,19 +120,23 @@
 
     }
 
-
+    // Función para mostrar la ventana modal de ingredientes de una bebida
     function mostrarVentana(bebidaId) {
+        // Muestra la ventana modal
         var ventana = document.getElementById('ventana-' + bebidaId);
         ventana.style.display = 'block';
+        // Realiza una solicitud AJAX para obtener los ingredientes de la bebida
         $.ajax({
             url: `/bebida/${bebidaId}/ingredientes/`,
             method: 'GET',
             success: function(response) {
                 console.log(response);
+                // Genera el HTML para mostrar los ingredientes
                 var ingredientesHtml = '';
                 response.ingredientes.forEach(function(ingrediente) {
                     ingredientesHtml += `<p>${ingrediente}</p>`;
                 });
+                // Inserta el HTML de los ingredientes en la ventana modal
                 document.getElementById('ingredientes-' + bebidaId).innerHTML = ingredientesHtml;
             },
             error: function(xhr, errmsg, err) {
@@ -125,6 +149,7 @@
     function ocultarVentana(bebidaId) {
         var ventana = document.getElementById('ventana-' + bebidaId);
         ventana.style.display = 'none';
+        // Aquí podrías agregar cualquier otra acción que desees realizar al cerrar la ventana modal
     }
 
 
@@ -170,29 +195,6 @@
         activarPrimeraPestana();
     });
 
-
-    function seleccionarIngrediente(ingredienteId) {
-        var cantidad = prompt("Ingrese la cantidad de este ingrediente:");
-        if (cantidad !== null) {
-            $.ajax({
-                url: `/agregar_ingrediente/${bebidaId}/${ingredienteId}/${cantidad}/`,
-                method: 'GET',  // Puedes cambiar a 'POST' si lo prefieres
-                success: function(response) {
-                    console.log(response);
-                    // Actualizar la interfaz de usuario para reflejar las bebidas seleccionadas
-                    var bebidaSeleccionadaHtml = `<li>${response.mensaje}</li>`;
-                    $('#bebidas-seleccionadas').append(bebidaSeleccionadaHtml);
-                    
-                    // Resaltar el ingrediente seleccionado
-                    $(`#ingrediente-${ingredienteId}`).addClass('ingrediente-seleccionado');
-                },
-                error: function(xhr, errmsg, err) {
-                    console.error('Error al agregar ingrediente:', errmsg);
-                }
-            });
-        }
-    }
-
     var cantidades = {}; // Objeto para almacenar las cantidades de ingredientes seleccionados
 
     function sumarCantidad(ingredienteId) {
@@ -202,7 +204,7 @@
         cantidades[ingredienteId]++;
         actualizarCantidad(ingredienteId);
     }
-
+    
     function restarCantidad(ingredienteId) {
         if (cantidades[ingredienteId] === undefined || cantidades[ingredienteId] <= 0) {
             return;
@@ -210,7 +212,7 @@
         cantidades[ingredienteId]--;
         actualizarCantidad(ingredienteId);
     }
-
+    
     function actualizarCantidad(ingredienteId) {
         var cantidadInput = document.getElementById('cantidad-' + ingredienteId);
         cantidadInput.value = cantidades[ingredienteId];
@@ -225,7 +227,43 @@
             }
         }
         console.log(ingredientesSeleccionados); // Enviar ingredientesSeleccionados al servidor mediante AJAX u otro método
+    
+        // Aquí podrías realizar una solicitud AJAX para enviar los ingredientes seleccionados al servidor y procesar la venta
+        // Una vez que la solicitud AJAX se completa correctamente, puedes cerrar la ventana modal y realizar otras acciones necesarias
+    
+        // Cerrar la ventana modal después de procesar la venta
+        var ventana = document.getElementById('ventana-' + bebidaId);
+        ventana.style.display = 'none';
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("confirmar_venta_btn").addEventListener("click", function() {
+            // Realizamos una solicitud AJAX para procesar la venta
+            $.ajax({
+                url: '/procesar_venta/',
+                method: 'POST',
+                data: {
+                    'confirmar_venta': true
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Mostramos un mensaje de éxito o realizamos otras acciones necesarias
+                        alert('Venta procesada correctamente');
+                        // Aquí puedes realizar otras acciones, como actualizar la página o mostrar un mensaje de éxito
+                    } else {
+                        // Mostramos un mensaje de error si la venta no se procesó correctamente
+                        alert('Hubo un error al procesar la venta');
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    // Manejamos los errores de la solicitud AJAX
+                    console.error('Error al procesar la venta:', errmsg);
+                    alert('Hubo un error al procesar la venta');
+                }
+            });
+        });
+    });
+
 
 
 </script>

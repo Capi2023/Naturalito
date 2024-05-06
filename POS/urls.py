@@ -4,6 +4,7 @@ from POSNAT import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     # Principal
     path('admin/', admin.site.urls),
@@ -15,6 +16,7 @@ urlpatterns = [
     path('ordenes/', views.ordenes, name="ordenes"),
     path('orden/nueva/', views.orden_nueva, name="orden_nueva"),
     #
+    
     path('menu/', views.menu, name="menu"),
     path('carrito/', views.carrito, name="carrito"),
     path('recetas/', views.recetas, name="recetas"),

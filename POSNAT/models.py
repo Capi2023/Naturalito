@@ -11,6 +11,7 @@ class BebidaDecorator(ABC):
     def precio_total(self):
         pass
 
+
 class BebidaDecorada(BebidaDecorator):
     def __init__(self, bebida, ingredientes_decoradores):
         super().__init__(bebida)
@@ -104,6 +105,7 @@ class Cliente(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - Puntos: {self.puntos}"
+
 
 class DetalleVenta(models.Model):
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)

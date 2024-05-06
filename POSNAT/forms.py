@@ -18,14 +18,16 @@ class ClienteForm(forms.ModelForm):
             raise forms.ValidationError('Este número de teléfono ya está registrado.')
         return telefono
 
+
 class IngredienteForm(forms.ModelForm):
     class Meta:
         model = Ingrediente
         fields = '__all__'
-        """
-        fields = ['nombre', 'tipo', 'imagen', 'precio_extra', 'cantidad_extra', 'cantidad_disponible', 'cantidad_minima', 'proveedor', 'detalles']
-        """
-        
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        return nombre.upper()
+
 
 class TipoForm(forms.ModelForm):
     class Meta:
@@ -43,4 +45,10 @@ class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
         fields = ['nombre', 'detalles']
+
+
+class VentaForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = '__all__'
 
