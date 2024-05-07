@@ -1,0 +1,48 @@
+
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar Ingredientes por Tipo</title>
+</head>
+<body>
+    <h1>Seleccionar Ingredientes por Tipo</h1>
+    <form id="seleccionar-ingredientes-form">
+        <label for="tipo">Tipo de Ingrediente:</label>
+        <select id="tipo" name="tipo">
+            <option value="">Selecciona un tipo</option>
+            {% for tipo in tipos %}
+                <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <div id="lista-ingredientes">
+        <!-- Aquí se mostrará la lista de ingredientes seleccionados -->
+    </div>
+    <script>
+        document.getElementById('tipo').addEventListener('change', function() {
+            var tipoId = this.value;
+            var listaIngredientes = document.getElementById('lista-ingredientes');
+            // Limpiar la lista de ingredientes
+            listaIngredientes.innerHTML = 'Cargando...';
+            // Corregir la URL para que coincida con la URL de la vista en Django
+            fetch(`/cargar_ingredientes_por_tipo/?tipo_id=${tipoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Limpiar la lista de ingredientes
+                    listaIngredientes.innerHTML = '';
+                    // Agregar los ingredientes a la lista
+                    data.forEach(ingrediente => {
+                        listaIngredientes.innerHTML += `<p>${ingrediente.nombre}</p>`;
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar ingredientes:', error);
+                    // Mostrar mensaje de error
+                    listaIngredientes.innerHTML = 'Error al cargar ingredientes';
+                });
+        });
+    </script>
+</body>
+</html>

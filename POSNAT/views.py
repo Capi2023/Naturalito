@@ -6,6 +6,8 @@ from .models import *
 from .decorators import *
 from .forms import *
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def prueba(request):
@@ -47,7 +49,7 @@ def clientes_nuevo(request):
             messages.success(request, 'Por favor corrija los errores en el formulario.')
     else:
         form = ClienteForm()
-    return render(request, 'home/cliente_nuevo.html', {'form': form})
+    return render(request, 'home/Cliente_nuevo.html', {'form': form})
 
 
 def clientes_actualizar(request, cliente_id):
@@ -61,7 +63,7 @@ def clientes_actualizar(request, cliente_id):
     else:
         form = ClienteForm(instance=cliente)
     
-    return render(request, 'home/cliente_actualizar.html', {'form': form, 'cliente_id': cliente_id})
+    return render(request, 'home/Cliente_actualizar.html', {'form': form, 'cliente_id': cliente_id})
 
 
 def eliminar_cliente(request, cliente_id):
@@ -100,7 +102,7 @@ def proveedores_actualizar(request, proveedor_id):
     else:
         form = ProveedorForm(instance=proveedor)
     
-    return render(request, 'home/proveedores_actualizar.html', {'form': form, 'proveedor_id': proveedor_id})
+    return render(request, 'home/Proveedores_actualizar.html', {'form': form, 'proveedor_id': proveedor_id})
 
 
 def proveedores_eliminar(request, proveedor_id):
@@ -124,11 +126,48 @@ def inventario_nuevo(request):
         if form.is_valid():
             form.save()
             return redirect('inventario')
-
+        else:
+            messages.error(request, "Error al crear un ingrediente, inténtelo de nuevo")
     else:
         form = IngredienteForm()
 
-    return render(request, 'home/inventario_nuevo.html', {'form': form, 'tipos': tipos, 'proveedores': proveedores})
+    # Obtener el tipo seleccionado, si existe
+    tipo_id = request.POST.get('tipo')
+    ingredientes_tipo = []
+    if tipo_id:
+        # Filtrar ingredientes por tipo seleccionado
+        ingredientes_tipo = Ingrediente.objects.filter(tipo_id=tipo_id)
+
+    return render(request, 'home/Inventario_nuevo.html', {'form': form, 'tipos': tipos, 'proveedores': proveedores, 'ingredientes_tipo': ingredientes_tipo})
+
+
+def obtener_ingredientes_por_tipo(request):
+    if request.method == 'GET':
+        tipo_id = request.GET.get('tipo_id')
+        if tipo_id:
+            ingredientes = Ingrediente.objects.filter(tipo_id=tipo_id)
+            data = [{'id': ingrediente.id, 'nombre': ingrediente.nombre} for ingrediente in ingredientes]
+            return JsonResponse(data, safe=False)
+        else:
+            return JsonResponse([], safe=False)  # Devuelve una lista vacía si no se proporciona el tipo_id
+    return JsonResponse({'error': 'Error en la solicitud'}, status=400)
+
+
+def cargar_ingredientes_por_tipo(request):
+    if request.method == 'GET':
+        tipo_id = request.GET.get('tipo_id')
+        if tipo_id:
+            ingredientes = Ingrediente.objects.filter(tipo_id=tipo_id)
+            data = [{'id': ingrediente.id, 'nombre': ingrediente.nombre} for ingrediente in ingredientes]
+            return JsonResponse(data, safe=False)
+        else:
+            return JsonResponse([], safe=False)  # Devuelve una lista vacía si no se proporciona el tipo_id
+    return JsonResponse({'error': 'Error en la solicitud'}, status=400)
+
+
+def seleccionar_ingredientes(request):
+    tipos = Tipo.objects.all()
+    return render(request, 'home/seleccionar_ingredientes.html', {'tipos': tipos})
 
 
 def inventario_actualizar(request, ingrediente_id):
@@ -151,16 +190,6 @@ def inventario_actualizar(request, ingrediente_id):
         form = IngredienteForm(instance=ingrediente)
 
     return render(request, 'home/Inventario_actualizar.html', {'form': form, 'ingrediente_id': ingrediente.id, 'tipos': tipos, 'proveedores': proveedores})
-
-
-def obtener_ingredientes_por_tipo(request):
-    if request.method == 'GET':
-        tipo_id = request.GET.get('tipo_id')
-        if tipo_id:
-            ingredientes = Ingrediente.objects.filter(tipo_id=tipo_id)
-            data = [{'id': ingrediente.id, 'nombre': ingrediente.nombre} for ingrediente in ingredientes]
-            return JsonResponse(data, safe=False)
-    return JsonResponse({'error': 'Error en la solicitud'}, status=400)
 
 
 @agregar_ingrediente
@@ -201,7 +230,7 @@ def tipo_nuevo(request):
 
 def bebidas(request):
     bebidas = Bebida.objects.all()
-    return render(request, 'home/bebidas.html', {'bebidas': bebidas})
+    return render(request, 'home/Bebidas.html', {'bebidas': bebidas})
 
 
 def bebida_nueva(request):
@@ -218,7 +247,7 @@ def bebida_nueva(request):
     ingredientes = Ingrediente.objects.all()
     categorias = Categoria.objects.all()
 
-    return render(request, 'home/bebida_nueva.html', {'form': form, 'ingredientes': ingredientes, 'categorias': categorias})
+    return render(request, 'home/Bebida_nueva.html', {'form': form, 'ingredientes': ingredientes, 'categorias': categorias})
 
 
 def bebida_actualizar(request, bebida_id):
@@ -235,7 +264,7 @@ def bebida_actualizar(request, bebida_id):
         ingredientes_iniciales = bebida.ingredientes.values_list('id', flat=True)
         form = BebidaForm(instance=bebida, initial={'ingredientes': ingredientes_iniciales})
     
-    return render(request, 'home/bebida_actualizar.html', {'form': form, 'bebida_id': bebida_id, 'categorias': categorias, 'ingredientes': ingredientes})
+    return render(request, 'home/Bebida_actualizar.html', {'form': form, 'bebida_id': bebida_id, 'categorias': categorias, 'ingredientes': ingredientes})
 
 
 def bebida_eliminar(request, bebida_id):
@@ -253,6 +282,7 @@ def categoria_nueva(request):
     else:
         form = CategoriaForm()
     return render(request, 'home/Categoria_nueva.html', {'form': form})
+
 
 def orden_nueva(request):
     ingredientes = Ingrediente.objects.all()
@@ -300,6 +330,36 @@ def procesar_venta(request):
         return JsonResponse({'success': False})  # Devuelve una respuesta JSON para indicar que hubo un error al procesar la venta
 
 
+@csrf_exempt
+def guardar_ingredientes(request):
+    if request.method == 'POST':
+        try:
+            bebida_id = request.POST.get('bebidaId')
+            ingredientes = json.loads(request.POST.get('ingredientes'))
+            bebida = Bebida.objects.get(id=bebida_id)
+
+            if 'venta_detalles' not in request.session:
+                request.session['venta_detalles'] = []
+
+            # Suponiendo que quieres agregar cada ingrediente con su cantidad a la venta
+            for ing in ingredientes:
+                ingrediente = Ingrediente.objects.get(id=ing['id'])
+                cantidad = ing['cantidad']
+                # Crear detalle de venta por cada tipo de ingrediente
+                detalle_venta = DetalleVenta.objects.create(
+                    bebida=bebida,
+                    cantidad=cantidad,  # Usar la cantidad pasada del frontend
+                    precio_unitario=bebida.precio_base  # Esto puede ajustarse si el precio depende de los ingredientes
+                )
+                request.session['venta_detalles'].append(detalle_venta.id)
+
+            request.session.modified = True
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'}, status=400)
+
+
 def obtener_ingredientes(request):
     ingredientes = Ingrediente.objects.all().values_list('nombre', flat=True)
     return JsonResponse({'ingredientes': list(ingredientes)})
@@ -308,4 +368,3 @@ def obtener_ingredientes(request):
 def vista_principal(request):
     categorias = Categoria.objects.all()
     return render(request, 'prueba.html', {'categorias': categorias})
-

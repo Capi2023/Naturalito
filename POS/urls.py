@@ -40,4 +40,9 @@ urlpatterns = [
     path('proveedores/eliminar/<int:proveedor_id>/', views.proveedores_eliminar, name='proveedores_eliminar'),
     path('prueba/', views.prueba, name="prueba"),
     path('bebida/<int:bebida_id>/ingredientes/', views.obtener_ingredientes, name='obtener_ingredientes'),
+    path('cargar_ingredientes_por_tipo/', views.cargar_ingredientes_por_tipo, name='cargar_ingredientes_por_tipo'),
+    path('seleccionar_ingredientes/', views.seleccionar_ingredientes, name='seleccionar_ingredientes'),
+    path('guardar_ingredientes/', views.guardar_ingredientes, name='guardar_ingredientes'),
+    # otras urls
+    # Prueba
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
