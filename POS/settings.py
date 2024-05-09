@@ -1,6 +1,7 @@
+import dj_database_url
+
 from pathlib import Path
 import os
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -72,6 +73,10 @@ DATABASES = {
         'PORT': '5433',
     }
 }
+
+DATABASES["default"] = dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
+
+# postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render
 
 
 # Password validation
