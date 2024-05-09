@@ -8,6 +8,23 @@
     <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="mt-4">
         {% csrf_token %}
         {{ detalle_venta_form.as_p }}
+        <div class="mb-3">
+            <label for="tamaño" class="form-label">Tamaño:</label>
+            <select class="form-select" id="tamaño" name="tamaño">
+                {% for tamaño in detalle_venta_form.fields.tamaño.queryset %}
+                    <option value="{{ tamaño.id }}">{{ tamaño.get_nombre_display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="ingredientes" class="form-label">Ingredientes:</label>
+            {% for ingrediente in ingredientes %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ingrediente_{{ ingrediente.id }}" name="ingrediente_{{ ingrediente.id }}" value="1">
+                    <label class="form-check-label" for="ingrediente_{{ ingrediente.id }}">{{ ingrediente.nombre }} ({{ ingrediente.cantidad_disponible }} {{ ingrediente.unidad }})</label>
+                </div>
+            {% endfor %}
+        </div>
         <button type="submit" class="btn btn-primary">Agregar Bebida</button>
     </form>
     <h3 class="mt-5">Bebidas en esta Venta</h3>
@@ -39,7 +56,8 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'crear_venta' %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+    <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
 </div>
 {% endblock %}
+
 

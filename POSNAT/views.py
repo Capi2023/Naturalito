@@ -376,12 +376,12 @@ def crear_venta(request):
     if request.method == 'POST':
         venta_form = VentaForm(request.POST)
         if venta_form.is_valid():
-            venta = venta_form.save()  # La venta se guarda por primera vez aquí
-            return redirect('agregar_detalle_venta', venta_id=venta.id)
+            venta = venta_form.save()
+            return redirect('detalle_venta', venta_id=venta.id)
     else:
         venta_form = VentaForm()
-    
     return render(request, 'home/crear_venta.html', {'venta_form': venta_form})
+
 
 def agregar_detalle_venta(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
@@ -390,12 +390,34 @@ def agregar_detalle_venta(request, venta_id):
         if detalle_venta_form.is_valid():
             detalle_venta = detalle_venta_form.save(commit=False)
             detalle_venta.venta = venta
+
+            tamaño = detalle_venta_form.cleaned_data['tamaño']
+            bebida = detalle_venta_form.cleaned_data['bebida']
+
+            # Ajustar cantidad de agua o leche según el tipo de bebida
+            if bebida.categoria.nombre.lower() in ['te', 'americano', 'tisana']:
+                detalle_venta.cantidad_agua = tamaño.cantidad_agua
+                detalle_venta.cantidad_leche = 0
+            else:
+                detalle_venta.cantidad_agua = 0
+                detalle_venta.cantidad_leche = tamaño.cantidad_leche
+
             detalle_venta.save()
+            
+            for ingrediente_id, cantidad in request.POST.items():
+                if ingrediente_id.startswith('ingrediente_'):
+                    ingrediente = get_object_or_404(Ingrediente, id=ingrediente_id.split('_')[1])
+                    DetalleVentaIngrediente.objects.create(detalle_venta=detalle_venta, ingrediente=ingrediente, cantidad=int(cantidad))
+                    ingrediente.cantidad_disponible -= int(cantidad)
+                    ingrediente.save()
+            
+            venta.save()  # Actualiza el total de la venta
             return redirect('agregar_detalle_venta', venta_id=venta.id)
     else:
         detalle_venta_form = DetalleVentaForm()
-    
-    return render(request, 'home/agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form})
+    ingredientes = Ingrediente.objects.all()
+    return render(request, 'agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form, 'ingredientes': ingredientes})
+
 
 def agregar_ingredientes(request, detalle_venta_id):
     detalle_venta = get_object_or_404(DetalleVenta, id=detalle_venta_id)
@@ -415,3 +437,11 @@ def agregar_ingredientes(request, detalle_venta_id):
 def ver_orden(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
     return render(request, 'ver_orden.html', {'venta': venta})
+
+
+def finalizar_venta(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
+    venta.estado = 'completada'
+    venta.save()
+    return redirect('ordenes')
+

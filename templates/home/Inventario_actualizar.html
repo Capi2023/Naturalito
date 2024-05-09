@@ -35,19 +35,19 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="cantidad_disponible" class="form-label">Cantidad disponible (gramos/onzas):</label>
+                    <label for="cantidad_disponible" class="form-label">Cantidad disponible:</label>
                     <input type="number" class="form-control" id="cantidad_disponible" name="cantidad_disponible" value="{{ form.cantidad_disponible.value }}">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="cantidad_a_anadir" class="form-label">Cantidad a añadir (gramos/onzas):</label>
+                    <label for="cantidad_a_anadir" class="form-label">Cantidad a añadir:</label>
                     <input type="number" class="form-control" id="cantidad_a_anadir" name="cantidad_a_anadir" value="0">
                 </div>
             </div>
         </div>
         <div class="mb-3">
-            <label for="cantidad_minima" class="form-label">Cantidad mínima (gramos/onzas):</label>
+            <label for="cantidad_minima" class="form-label">Cantidad mínima:</label>
             <input type="number" class="form-control" id="cantidad_minima" name="cantidad_minima" value="{{ form.cantidad_minima.value }}">
         </div>
         <div class="mb-3">
@@ -58,11 +58,18 @@
             </select>
         </div>
         <div class="mb-3">
+            <label for="unidad_original" class="form-label">Unidad Original:</label>
+            <select class="form-select" id="unidad_original" name="unidad_original">
+                <option value="litros" {% if form.unidad_original.value == 'litros' %} selected {% endif %}>Litros</option>
+                <option value="kilogramos" {% if form.unidad_original.value == 'kilogramos' %} selected {% endif %}>Kilogramos</option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label for="proveedor" class="form-label">Proveedor:</label>
             <select class="form-select" id="proveedor" name="proveedor">
                 <option value="">Ninguno</option>
                 {% for proveedor in proveedores %}
-                    <option value="{{ proveedor.id }}" {% if proveedor.id == form.proveedor.value %} selected {% endif %}>{{ proveedor.compañia }}</option>
+                    <option value="{{ proveedor.id }}" {% if proveedor.id == form.proveedor.value %} selected {% endif %}>{{ proveedor.compañía }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -75,3 +82,4 @@
     </form>
 </div>
 {% endblock %}
+

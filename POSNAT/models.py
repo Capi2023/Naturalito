@@ -45,25 +45,30 @@ class Ingrediente(models.Model):
     imagen = models.ImageField(upload_to='ingredientes/', default='static/images/sin.jpg')
     precio_extra = models.DecimalField(max_digits=5, decimal_places=2)
     cantidad_porcion_extra = models.PositiveIntegerField(default=0)
-    cantidad_disponible = models.PositiveIntegerField(default=0)
-    cantidad_minima = models.PositiveIntegerField(default=10)
+    cantidad_disponible = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # Se usa DecimalField para mayor precisión
+    cantidad_minima = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    unidad_original = models.CharField(max_length=10, choices=UNIDADES_ORIGINALES, default='kilogramos')
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, null=True, blank=True)
     detalles = models.TextField(blank=True, null=True)
     unidad = models.CharField(max_length=10, choices=UNIDADES, default='gramos')
-    cantidad_original = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    unidad_original = models.CharField(max_length=10, choices=UNIDADES_ORIGINALES, default='kilogramos')
 
     def __str__(self):
         return self.nombre
 
 
 class TamañoBebida(models.Model):
-    nombre = models.CharField(max_length=50)
+    TAMAÑOS = [
+        ('chico', 'Chico'),
+        ('mediano', 'Mediano'),
+        ('grande', 'Grande'),
+    ]
+
+    nombre = models.CharField(max_length=50, choices=TAMAÑOS, unique=True)
     cantidad_agua = models.PositiveIntegerField()
     cantidad_leche = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.nombre
+        return self.get_nombre_display()
 
 
 class Bebida(models.Model):
@@ -78,6 +83,7 @@ class Bebida(models.Model):
 
     def __str__(self):
         return self.nombre
+
 
 
 class Cliente(models.Model):

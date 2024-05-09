@@ -22,10 +22,13 @@
             <th>Tipo</th>
             <th>Imagen</th>
             <th>Proveedor</th>
-            <th>Cantidad disponible (gramos)</th>
+            <th>Cantidad disponible</th>
+            <th>Unidad Original</th>
+            <th>Cantidad Original</th>
             <th>Precio extra</th>
-            <th>Cantidad extra (gramos)</th>
-            <th>Cantidad mínima (gramos)</th>
+            <th>Cantidad extra</th>
+            <th>Cantidad mínima</th>
+            <th>Unidad</th>
             <th>Actualizar</th>
             <th>Eliminar</th>
         </thead>
@@ -38,10 +41,13 @@
                     <img src="{{ ingrediente.imagen.url }}" alt="" style="max-width: 100px; max-height: 100px;">
                 </td>
                 <td>{{ ingrediente.proveedor }}</td>
-                <td>{{ ingrediente.cantidad_disponible }} {{ ingrediente.unidad }}</td>
+                <td>{{ ingrediente.cantidad_disponible }} {{ ingrediente.unidad_original }}</td>
+                <td>{{ ingrediente.unidad_original }}</td>
+                <td>{{ ingrediente.cantidad_disponible }}</td>
                 <td>{{ ingrediente.precio_extra }}</td>
                 <td>{{ ingrediente.cantidad_porcion_extra }} {{ ingrediente.unidad }}</td>
-                <td>{{ ingrediente.cantidad_minima }} {{ ingrediente.unidad }}</td>
+                <td>{{ ingrediente.cantidad_minima }} {{ ingrediente.unidad_original }}</td>
+                <td>{{ ingrediente.unidad }}</td>
                 <td><a href="{% url 'inventario_actualizar' ingrediente_id=ingrediente.id %}" class="btn btn-outline-warning">Actualizar</a></td>
                 <td><button class="btn btn-outline-danger delete-btn" data-id="{{ ingrediente.id }}">Eliminar</button></td>
             </tr>

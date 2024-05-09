@@ -9,7 +9,8 @@ from .models import (
     Cliente,
     DetalleVenta,
     ReporteVenta,
-    DetalleVentaIngrediente
+    DetalleVentaIngrediente,
+    TamañoBebida  # Asegúrate de incluir TamañoBebida si no lo has hecho ya
 )
 
 class ProveedorAdmin(admin.ModelAdmin):
@@ -33,7 +34,7 @@ class BebidaAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'categoria', 'precio_base', 'disponible')
     search_fields = ('nombre', 'categoria__nombre')
     list_filter = ('categoria', 'disponible')
-    filter_horizontal = ('ingredientes',)
+    filter_horizontal = ('ingredientes', 'tamaños')  # Añadir 'tamaños' si estás utilizando la relación ManyToMany
 
 class ClienteAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'apellido', 'telefono', 'correo', 'puntos')
@@ -54,6 +55,14 @@ class ReporteVentaAdmin(admin.ModelAdmin):
     search_fields = ('tipo_periodo',)
     list_filter = ('tipo_periodo', 'fecha_inicio')
 
+class DetalleVentaIngredienteAdmin(admin.ModelAdmin):
+    list_display = ('detalle_venta', 'ingrediente', 'cantidad')
+    search_fields = ('detalle_venta__venta__id', 'ingrediente__nombre')
+
+class TamañoBebidaAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'cantidad_agua', 'cantidad_leche')
+    search_fields = ('nombre',)
+
 admin.site.register(Proveedor, ProveedorAdmin)
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Tipo, TipoAdmin)
@@ -63,4 +72,6 @@ admin.site.register(Venta, VentaAdmin)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(DetalleVenta)
 admin.site.register(ReporteVenta, ReporteVentaAdmin)
-admin.site.register(DetalleVentaIngrediente)
+admin.site.register(DetalleVentaIngrediente, DetalleVentaIngredienteAdmin)
+admin.site.register(TamañoBebida, TamañoBebidaAdmin)
+
