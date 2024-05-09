@@ -29,26 +29,33 @@
             <input type="number" class="form-control" id="precio_extra" name="precio_extra" value="{{ form.precio_extra.value }}">
         </div>
         <div class="mb-3">
-            <label for="cantidad_extra" class="form-label">Cantidad extra:</label>
-            <input type="number" class="form-control" id="cantidad_extra" name="cantidad_extra" value="{{ form.cantidad_extra.value }}">
+            <label for="cantidad_porcion_extra" class="form-label">Cantidad extra (gramos/onzas):</label>
+            <input type="number" class="form-control" id="cantidad_porcion_extra" name="cantidad_porcion_extra" value="{{ form.cantidad_porcion_extra.value }}">
         </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="cantidad_disponible" class="form-label">Cantidad disponible:</label>
+                    <label for="cantidad_disponible" class="form-label">Cantidad disponible (gramos/onzas):</label>
                     <input type="number" class="form-control" id="cantidad_disponible" name="cantidad_disponible" value="{{ form.cantidad_disponible.value }}">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label for="cantidad_a_anadir" class="form-label">Cantidad a añadir:</label>
+                    <label for="cantidad_a_anadir" class="form-label">Cantidad a añadir (gramos/onzas):</label>
                     <input type="number" class="form-control" id="cantidad_a_anadir" name="cantidad_a_anadir" value="0">
                 </div>
             </div>
         </div>
         <div class="mb-3">
-            <label for="cantidad_minima" class="form-label">Cantidad mínima:</label>
+            <label for="cantidad_minima" class="form-label">Cantidad mínima (gramos/onzas):</label>
             <input type="number" class="form-control" id="cantidad_minima" name="cantidad_minima" value="{{ form.cantidad_minima.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="unidad" class="form-label">Unidad:</label>
+            <select class="form-select" id="unidad" name="unidad">
+                <option value="gramos" {% if form.unidad.value == 'gramos' %} selected {% endif %}>Gramos</option>
+                <option value="onzas" {% if form.unidad.value == 'onzas' %} selected {% endif %}>Onzas</option>
+            </select>
         </div>
         <div class="mb-3">
             <label for="proveedor" class="form-label">Proveedor:</label>
@@ -68,4 +75,3 @@
     </form>
 </div>
 {% endblock %}
-

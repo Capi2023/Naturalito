@@ -368,3 +368,50 @@ def obtener_ingredientes(request):
 def vista_principal(request):
     categorias = Categoria.objects.all()
     return render(request, 'prueba.html', {'categorias': categorias})
+
+
+##### Prueba
+
+def crear_venta(request):
+    if request.method == 'POST':
+        venta_form = VentaForm(request.POST)
+        if venta_form.is_valid():
+            venta = venta_form.save()  # La venta se guarda por primera vez aquí
+            return redirect('agregar_detalle_venta', venta_id=venta.id)
+    else:
+        venta_form = VentaForm()
+    
+    return render(request, 'home/crear_venta.html', {'venta_form': venta_form})
+
+def agregar_detalle_venta(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
+    if request.method == 'POST':
+        detalle_venta_form = DetalleVentaForm(request.POST)
+        if detalle_venta_form.is_valid():
+            detalle_venta = detalle_venta_form.save(commit=False)
+            detalle_venta.venta = venta
+            detalle_venta.save()
+            return redirect('agregar_detalle_venta', venta_id=venta.id)
+    else:
+        detalle_venta_form = DetalleVentaForm()
+    
+    return render(request, 'home/agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form})
+
+def agregar_ingredientes(request, detalle_venta_id):
+    detalle_venta = get_object_or_404(DetalleVenta, id=detalle_venta_id)
+    if request.method == 'POST':
+        ingrediente_form = DetalleVentaIngredienteForm(request.POST)
+        if ingrediente_form.is_valid():
+            detalle_ingrediente = ingrediente_form.save(commit=False)
+            detalle_ingrediente.detalle_venta = detalle_venta
+            detalle_ingrediente.save()
+            return redirect('agregar_ingredientes', detalle_venta_id=detalle_venta.id)
+    else:
+        ingrediente_form = DetalleVentaIngredienteForm()
+    
+    return render(request, 'home/agregar_ingredientes.html', {'detalle_venta': detalle_venta, 'ingrediente_form': ingrediente_form})
+
+
+def ver_orden(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
+    return render(request, 'ver_orden.html', {'venta': venta})

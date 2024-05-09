@@ -43,6 +43,9 @@ urlpatterns = [
     path('cargar_ingredientes_por_tipo/', views.cargar_ingredientes_por_tipo, name='cargar_ingredientes_por_tipo'),
     path('seleccionar_ingredientes/', views.seleccionar_ingredientes, name='seleccionar_ingredientes'),
     path('guardar_ingredientes/', views.guardar_ingredientes, name='guardar_ingredientes'),
-    # otras urls
     # Prueba
+    path('crear-venta/', views.crear_venta, name='crear_venta'),
+    path('agregar-detalle-venta/<int:venta_id>/', views.agregar_detalle_venta, name='agregar_detalle_venta'),
+    path('agregar-ingredientes/<int:detalle_venta_id>/', views.agregar_ingredientes, name='agregar_ingredientes'),
+    path('ver-orden/<int:venta_id>/', views.ver_orden, name='ver_orden'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

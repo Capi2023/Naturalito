@@ -1,15 +1,17 @@
 from django.db import models
 from django.utils import timezone
 
+
 class Proveedor(models.Model):
     nombre = models.CharField(max_length=100)
-    compañia = models.CharField(max_length=100)
+    compañía = models.CharField(max_length=100)
     direccion = models.CharField(max_length=200)
     correo = models.EmailField()
     numero = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
-        return f"{self.nombre} {self.compañia}"
+        return f"{self.nombre} {self.compañía}"
+
 
 class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
@@ -18,6 +20,7 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
+
 class Tipo(models.Model):
     nombre = models.CharField(max_length=100)
     detalles = models.TextField(blank=True, null=True)
@@ -25,19 +28,43 @@ class Tipo(models.Model):
     def __str__(self):
         return self.nombre
 
+
 class Ingrediente(models.Model):
+    UNIDADES = [
+        ('gramos', 'Gramos'),
+        ('onzas', 'Onzas'),
+    ]
+
+    UNIDADES_ORIGINALES = [
+        ('litros', 'Litros'),
+        ('kilogramos', 'Kilogramos'),
+    ]
+
     nombre = models.CharField(max_length=100)
     tipo = models.ForeignKey(Tipo, on_delete=models.CASCADE, null=True, blank=True)
     imagen = models.ImageField(upload_to='ingredientes/', default='static/images/sin.jpg')
     precio_extra = models.DecimalField(max_digits=5, decimal_places=2)
-    cantidad_extra = models.PositiveIntegerField(default=0)
+    cantidad_porcion_extra = models.PositiveIntegerField(default=0)
     cantidad_disponible = models.PositiveIntegerField(default=0)
     cantidad_minima = models.PositiveIntegerField(default=10)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, null=True, blank=True)
     detalles = models.TextField(blank=True, null=True)
+    unidad = models.CharField(max_length=10, choices=UNIDADES, default='gramos')
+    cantidad_original = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    unidad_original = models.CharField(max_length=10, choices=UNIDADES_ORIGINALES, default='kilogramos')
 
     def __str__(self):
         return self.nombre
+
+
+class TamañoBebida(models.Model):
+    nombre = models.CharField(max_length=50)
+    cantidad_agua = models.PositiveIntegerField()
+    cantidad_leche = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.nombre
+
 
 class Bebida(models.Model):
     nombre = models.CharField(max_length=100)
@@ -46,6 +73,8 @@ class Bebida(models.Model):
     ingredientes = models.ManyToManyField(Ingrediente)
     precio_base = models.DecimalField(max_digits=8, decimal_places=2)
     detalles = models.TextField(blank=True, null=True)
+    disponible = models.BooleanField(default=True)
+    tamaños = models.ManyToManyField(TamañoBebida)
 
     def __str__(self):
         return self.nombre
@@ -64,9 +93,10 @@ class Cliente(models.Model):
 
 class Venta(models.Model):
     fecha_venta = models.DateTimeField(default=timezone.now)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     detalles = models.TextField(blank=True, null=True)
-    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)  # Cliente opcional
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)
+    estado = models.CharField(max_length=20, default='pendiente')
 
     def calcular_total(self):
         total = 0
@@ -75,6 +105,7 @@ class Venta(models.Model):
         return total
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         self.total = self.calcular_total()
         super().save(*args, **kwargs)
 
@@ -88,6 +119,7 @@ class DetalleVenta(models.Model):
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     ingredientes_extra = models.ManyToManyField(Ingrediente, through='DetalleVentaIngrediente')
+    comentarios = models.TextField(blank=True, null=True)
 
     def subtotal(self):
         total_base = self.cantidad * self.precio_unitario
@@ -99,6 +131,7 @@ class DetalleVenta(models.Model):
     def __str__(self):
         return f'Detalle de Venta - {self.venta} - Producto: {self.bebida.nombre} - Cantidad: {self.cantidad}'
 
+
 class DetalleVentaIngrediente(models.Model):
     detalle_venta = models.ForeignKey(DetalleVenta, on_delete=models.CASCADE)
     ingrediente = models.ForeignKey(Ingrediente, on_delete=models.CASCADE)
@@ -107,6 +140,7 @@ class DetalleVentaIngrediente(models.Model):
     def __str__(self):
         return f'{self.cantidad}x {self.ingrediente.nombre} para {self.detalle_venta}'
 
+
 class ReporteVenta(models.Model):
     TIPOS_DE_PERIODO = [
         ('Dia', 'Día'),
@@ -114,10 +148,12 @@ class ReporteVenta(models.Model):
         ('Mes', 'Mes'),
     ]
     fecha_inicio = models.DateField()
+    fecha_fin = models.DateField(blank=True, null=True)
     tipo_periodo = models.CharField(max_length=10, choices=TIPOS_DE_PERIODO)
     total_ventas = models.DecimalField(max_digits=10, decimal_places=2)
+    total_bebidas_vendidas = models.PositiveIntegerField(default=0)
+    cantidad_de_clientes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Reporte de Ventas - {self.tipo_periodo} {self.fecha_inicio}"
-    
 

@@ -2,21 +2,21 @@
 
 {% block content %}
 <div class="m-5">
-    <h1>Actualizar Bebida</h1>
+    <h1>Agregar Nueva Bebida</h1>
 </div>
 <div class="container-sm" style="max-width: 1200px;">
-    <form method="post" action="{% url 'bebida_actualizar' bebida_id=bebida_id %}" class="mt-4" enctype="multipart/form-data">
+    <form method="post" action="{% url 'bebida_nueva' %}" class="mt-4" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ form.nombre.value }}">
+            <input type="text" class="form-control" id="nombre" name="nombre">
         </div>
         <div class="mb-3">
             <label for="categoria" class="form-label">Categoría:</label>
             <select class="form-select" id="categoria" name="categoria">
                 <option value="">Ninguna</option>
                 {% for categoria in categorias %}
-                    <option value="{{ categoria.id }}" {% if categoria.id == form.categoria.value %} selected {% endif %}>{{ categoria.nombre }}</option>
+                    <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -28,30 +28,37 @@
             <label for="ingredientes" class="form-label">Ingredientes:</label>
             <div class="form-check">
                 {% for ingrediente in ingredientes %}
-                    <input class="form-check-input" type="checkbox" id="ingrediente_{{ ingrediente.id }}" name="ingredientes" value="{{ ingrediente.id }}" {% if ingrediente in form.ingredientes.all %} checked {% endif %}>
+                    <input class="form-check-input" type="checkbox" id="ingrediente_{{ ingrediente.id }}" name="ingredientes" value="{{ ingrediente.id }}">
                     <label class="form-check-label" for="ingrediente_{{ ingrediente.id }}">{{ ingrediente.nombre }}</label><br>
                 {% endfor %}
             </div>
         </div>
         <div class="mb-3">
             <label for="precio_base" class="form-label">Precio Base:</label>
-            <input type="number" class="form-control" id="precio_base" name="precio_base" value="{{ form.precio_base.value }}">
+            <input type="number" class="form-control" id="precio_base" name="precio_base">
         </div>
         <div class="mb-3">
             <label for="disponible" class="form-label">Disponible:</label>
             <select class="form-select" id="disponible" name="disponible">
-                <option value="True" {% if form.disponible.value == 'True' %} selected {% endif %}>Sí</option>
-                <option value="False" {% if form.disponible.value == 'False' %} selected {% endif %}>No</option>
+                <option value="True">Sí</option>
+                <option value="False">No</option>
             </select>
         </div>
         <div class="mb-3">
-            <label for="detalles" class="form-label">Detalles:</label>
-            <textarea class="form-control" id="detalles" name="detalles" rows="3">{{ form.detalles.value }}</textarea>
+            <label for="tamaños" class="form-label">Tamaños:</label>
+            <div class="form-check">
+                {% for tamaño in tamaños %}
+                    <input class="form-check-input" type="checkbox" id="tamaño_{{ tamaño.id }}" name="tamaños" value="{{ tamaño.id }}">
+                    <label class="form-check-label" for="tamaño_{{ tamaño.id }}">{{ tamaño.nombre }}</label><br>
+                {% endfor %}
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Actualizar Bebida</button>
+        <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles:</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Agregar Bebida</button>
         <a href="{% url 'bebidas' %}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}
-
-

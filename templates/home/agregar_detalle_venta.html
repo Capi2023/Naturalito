@@ -1,0 +1,45 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Agregar Bebida a la Venta</h1>
+</div>
+<div class="container-sm" style="max-width: 1200px;">
+    <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="mt-4">
+        {% csrf_token %}
+        {{ detalle_venta_form.as_p }}
+        <button type="submit" class="btn btn-primary">Agregar Bebida</button>
+    </form>
+    <h3 class="mt-5">Bebidas en esta Venta</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Ingredientes Extra</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in venta.detalleventa_set.all %}
+            <tr>
+                <td>{{ detalle.bebida.nombre }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario }}</td>
+                <td>
+                    {% for ingrediente in detalle.ingredientes_extra.all %}
+                        {{ ingrediente.nombre }}<br>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'agregar_ingredientes' detalle.id %}" class="btn btn-outline-info">Agregar Ingredientes</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'crear_venta' %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+</div>
+{% endblock %}
+

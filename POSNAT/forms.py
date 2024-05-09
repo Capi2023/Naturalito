@@ -4,13 +4,13 @@ from .models import *
 class ProveedorForm(forms.ModelForm):
     class Meta:
         model = Proveedor
-        fields = ['nombre', 'compañia', 'direccion', 'correo', 'numero']
+        fields = ['nombre', 'compañía', 'direccion', 'correo', 'numero']
 
 
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'telefono', 'correo', 'puntos']  # Removido 'venta'
+        fields = ['nombre', 'apellido', 'telefono', 'correo', 'puntos']
 
     def clean_telefono(self):
         telefono = self.cleaned_data.get('telefono')
@@ -26,17 +26,9 @@ class IngredienteForm(forms.ModelForm):
 
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
-        # Verificar si ya existe un ingrediente con el mismo nombre
         if Ingrediente.objects.filter(nombre__iexact=nombre).exists():
             raise forms.ValidationError("Ya existe un ingrediente con este nombre.")
         return nombre.upper()
-
-    def clean(self):
-        cleaned_data = super().clean()
-        tipo = cleaned_data.get('tipo')
-        proveedor = cleaned_data.get('proveedor')
-        # Realizar verificaciones adicionales si es necesario
-        return cleaned_data
 
 
 class TipoForm(forms.ModelForm):
@@ -48,7 +40,7 @@ class TipoForm(forms.ModelForm):
 class BebidaForm(forms.ModelForm):
     class Meta:
         model = Bebida
-        fields = ['nombre', 'categoria', 'imagen', 'ingredientes', 'precio_base', 'detalles']
+        fields = ['nombre', 'categoria', 'imagen', 'ingredientes', 'precio_base', 'detalles', 'disponible', 'tamaños']
 
 
 class CategoriaForm(forms.ModelForm):
@@ -66,17 +58,17 @@ class VentaForm(forms.ModelForm):
 class DetalleVentaForm(forms.ModelForm):
     class Meta:
         model = DetalleVenta
-        fields = ['bebida', 'cantidad', 'precio_unitario']
+        fields = ['bebida', 'cantidad', 'precio_unitario', 'comentarios']
 
 
-class BebidaIngredientesForm(forms.ModelForm):
-    ingredientes = forms.ModelMultipleChoiceField(
-        queryset=Ingrediente.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-
+class DetalleVentaIngredienteForm(forms.ModelForm):
     class Meta:
-        model = Bebida
-        fields = ['nombre', 'categoria', 'imagen', 'precio_base', 'detalles', 'ingredientes']
+        model = DetalleVentaIngrediente
+        fields = ['detalle_venta', 'ingrediente', 'cantidad']
+
+
+class ReporteVentaForm(forms.ModelForm):
+    class Meta:
+        model = ReporteVenta
+        fields = ['fecha_inicio', 'fecha_fin', 'tipo_periodo', 'total_ventas', 'total_bebidas_vendidas', 'cantidad_de_clientes']
 
