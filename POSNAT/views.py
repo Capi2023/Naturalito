@@ -23,7 +23,7 @@ def landing(request):
 def ordenes(request):
     ventas_pendientes = Venta.objects.filter(estado='pendiente')
     ventas_completadas = Venta.objects.filter(estado='completada')
-    return render(request, 'home/ordenes.html', {
+    return render(request, 'home/Ordenes.html', {
         'ventas_pendientes': ventas_pendientes,
         'ventas_completadas': ventas_completadas
     })
