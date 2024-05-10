@@ -75,6 +75,7 @@ DATABASES = {
     }
 }
 
+
 DATABASES["default"] = dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
 
 

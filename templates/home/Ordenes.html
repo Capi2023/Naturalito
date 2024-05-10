@@ -9,6 +9,7 @@
 </div>
 
 <div class="container-sm" style="max-width: 1200px;">
+    <h3>Órdenes Pendientes</h3>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -21,17 +22,59 @@
             </tr>
         </thead>
         <tbody>
-            {% for venta in ventas %}
+            {% for venta in ventas_pendientes %}
                 <tr>
                     <td>{{ venta.id }}</td>
-                    <td>{{ venta.detalleventa_set.count }}</td>
+                    <td>
+                        <ul>
+                            {% for detalle in venta.detalleventa_set.all %}
+                                <li>{{ detalle.bebida.nombre }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
                     <td>{{ venta.total }}</td>
                     <td>{{ venta.cliente }}</td>
                     <td>
                         <a href="{% url 'ver_orden' venta.id %}" class="btn btn-outline-primary">Ver</a>
                     </td>
                     <td>
-                        <a href="{% url 'eliminar_orden' venta.id %}" class="btn btn-outline-danger">Eliminar</a>
+                        <button class="btn btn-outline-danger" onclick="confirmarEliminacion({{ venta.id }})">Eliminar</button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Órdenes Completadas</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Numero de Orden</th>
+                <th>Bebidas en la Orden</th>
+                <th>Total</th>
+                <th>Cliente</th>
+                <th>Ver</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas_completadas %}
+                <tr>
+                    <td>{{ venta.id }}</td>
+                    <td>
+                        <ul>
+                            {% for detalle in venta.detalleventa_set.all %}
+                                <li>{{ detalle.bebida.nombre }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ venta.total }}</td>
+                    <td>{{ venta.cliente }}</td>
+                    <td>
+                        <a href="{% url 'ver_orden' venta.id %}" class="btn btn-outline-primary">Ver</a>
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-danger" onclick="confirmarEliminacion({{ venta.id }})">Eliminar</button>
                     </td>
                 </tr>
             {% endfor %}
@@ -64,6 +107,12 @@ document.getElementById('nueva-orden-btn').addEventListener('click', function() 
     })
     .catch(error => console.error('Error:', error));
 });
+
+function confirmarEliminacion(ventaId) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta orden?')) {
+        window.location.href = "{% url 'eliminar_orden' 0 %}".replace('0', ventaId);
+    }
+}
 </script>
 {% endblock %}
 

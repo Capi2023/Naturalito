@@ -69,7 +69,7 @@ class DetalleVentaForm(forms.ModelForm):
 class DetalleVentaIngredienteForm(forms.ModelForm):
     class Meta:
         model = DetalleVentaIngrediente
-        fields = ['detalle_venta', 'ingrediente', 'cantidad']
+        fields = ['ingrediente', 'cantidad']
 
 
 class ReporteVentaForm(forms.ModelForm):

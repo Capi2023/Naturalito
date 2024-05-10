@@ -35,5 +35,9 @@
         </tbody>
     </table>
     <a href="{% url 'agregar_detalle_venta' venta.id %}" class="btn btn-primary">Agregar Bebida</a>
+    {% if venta.estado == 'pendiente' %}
+    <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-success">Finalizar Venta</a>
+    {% endif %}
 </div>
 {% endblock %}
+

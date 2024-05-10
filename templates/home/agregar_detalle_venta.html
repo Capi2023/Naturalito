@@ -4,87 +4,105 @@
 <div class="container mt-5">
     <h1 class="mb-4">Agregar Bebida a la Venta</h1>
     
-    <!-- Información de la venta -->
-    <div class="card mb-4">
-        <div class="card-header">
-            Información de la Venta
+    <div class="row">
+        <!-- Información de la venta -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Información de la Venta
+                </div>
+                <div class="card-body">
+                    <form id="venta-info-form">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="telefono-cliente" class="form-label">Teléfono del Cliente</label>
+                            <input type="text" class="form-control" id="telefono-cliente" name="telefono-cliente" placeholder="Ingrese el número de teléfono del cliente">
+                            <ul id="cliente-lista" class="list-group mt-2" style="display: none;"></ul>
+                        </div>
+                        <div class="mb-3">
+                            <label for="detalles" class="form-label">Detalles</label>
+                            <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha-venta" class="form-label">Fecha de Venta</label>
+                            <input type="text" class="form-control" id="fecha-venta" name="fecha-venta" value="{{ venta.fecha_venta }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="total" class="form-label">Total</label>
+                            <input type="text" class="form-control" id="total" name="total" value="{{ venta.total }}" readonly>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <form id="venta-info-form">
+
+        <!-- Formulario para agregar bebidas y tabla de bebidas -->
+        <div class="col-md-8">
+            <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="needs-validation" novalidate>
                 {% csrf_token %}
                 <div class="mb-3">
-                    <label for="telefono-cliente" class="form-label">Teléfono del Cliente</label>
-                    <input type="text" class="form-control" id="telefono-cliente" name="telefono-cliente" placeholder="Ingrese el número de teléfono del cliente">
-                    <ul id="cliente-lista" class="list-group mt-2" style="display: none;"></ul>
-                </div>
-                <div class="mb-3">
-                    <label for="detalles" class="form-label">Detalles</label>
-                    <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="fecha-venta" class="form-label">Fecha de Venta</label>
-                    <input type="text" class="form-control" id="fecha-venta" name="fecha-venta" value="{{ venta.fecha_venta }}" readonly>
-                </div>
-                <div class="mb-3">
-                    <label for="total" class="form-label">Total</label>
-                    <input type="text" class="form-control" id="total" name="total" value="{{ venta.total }}" readonly>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Formulario para agregar bebidas -->
-    <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="needs-validation" novalidate>
-        {% csrf_token %}
-        <div class="mb-3">
-            {{ detalle_venta_form.bebida.label_tag }} {{ detalle_venta_form.bebida }}
-        </div>
-        <div class="mb-3">
-            {{ detalle_venta_form.cantidad.label_tag }} {{ detalle_venta_form.cantidad }}
-        </div>
-        <div class="mb-3">
-            {{ detalle_venta_form.tamaño.label_tag }} {{ detalle_venta_form.tamaño }}
-        </div>
-        <div class="mb-3">
-            <label for="precio-unitario" class="form-label">Precio Unitario</label>
-            <input type="text" class="form-control" id="precio-unitario" name="precio_unitario" readonly>
-        </div>
-        <input type="hidden" id="precio-base" name="precio_base">
-        <button type="submit" class="btn btn-primary">Agregar Bebida</button>
-    </form>
-
-    <!-- Tabla de bebidas en la venta -->
-    <div class="mt-5">
-        <h3>Bebidas en esta Venta</h3>
-        <table class="table table-striped mt-3">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unitario</th>
-                    <th>Ingredientes Extra</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for detalle in venta.detalleventa_set.all %}
-                <tr>
-                    <td>{{ detalle.bebida.nombre }}</td>
-                    <td>{{ detalle.cantidad }}</td>
-                    <td>{{ detalle.precio_unitario }}</td>
-                    <td>
-                        {% for ingrediente in detalle.ingredientes_extra.all %}
-                            {{ ingrediente.nombre }}<br>
+                    <label class="form-label">Seleccionar Bebida</label>
+                    <div id="bebidas-container" class="d-flex flex-wrap">
+                        {% for bebida in bebidas %}
+                        <div class="card m-2 bebida-card" style="width: 100px;" data-bebida-id="{{ bebida.id }}" data-bebida-nombre="{{ bebida.nombre }}">
+                            <img src="{{ bebida.imagen.url }}" class="card-img-top" alt="{{ bebida.nombre }}">
+                            <div class="card-body text-center">
+                                <p class="card-text">{{ bebida.nombre }}</p>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </td>
-                    <td>
-                        <a href="{% url 'agregar_ingredientes' detalle.id %}" class="btn btn-outline-info btn-sm">Agregar Ingredientes</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+                    </div>
+                    <input type="hidden" id="id_bebida" name="bebida">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" class="form-control" id="id_cantidad" name="cantidad" value="1">
+                </div>
+                <div class="mb-3">
+                    {{ detalle_venta_form.tamaño.label_tag }} {{ detalle_venta_form.tamaño }}
+                </div>
+                <div class="mb-3">
+                    <label for="precio-unitario" class="form-label">Precio Unitario</label>
+                    <input type="text" class="form-control" id="precio-unitario" name="precio_unitario" readonly>
+                </div>
+                <input type="hidden" id="precio-base" name="precio_base">
+                <button type="submit" class="btn btn-primary">Agregar Bebida</button>
+            </form>
+
+            <!-- Tabla de bebidas en la venta -->
+            <div class="mt-5">
+                <h3>Bebidas en esta Venta</h3>
+                <table class="table table-striped mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Ingredientes Extra</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in venta.detalleventa_set.all %}
+                        <tr>
+                            <td>{{ detalle.bebida.nombre }}</td>
+                            <td>{{ detalle.cantidad }}</td>
+                            <td>{{ detalle.precio_unitario }}</td>
+                            <td>
+                                {% for ingrediente in detalle.ingredientes_extra.all %}
+                                    {{ ingrediente.nombre }}<br>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{% url 'agregar_ingredientes' detalle.id %}" class="btn btn-outline-info btn-sm">Agregar Ingredientes</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -179,9 +197,23 @@
         // Event listeners para buscar clientes y actualizar información de la venta
         telefonoInput.addEventListener('input', buscarClientes);
         detallesInput.addEventListener('change', actualizarVentaInfo);
-        bebidaSelect.addEventListener('change', actualizarPrecioUnitario);
+
+        // Event listener para seleccionar bebida
+        document.querySelectorAll('.bebida-card').forEach(card => {
+            card.addEventListener('click', function () {
+                const bebidaId = this.getAttribute('data-bebida-id');
+                bebidaSelect.value = bebidaId;
+                actualizarPrecioUnitario();
+                document.getElementById('id_cantidad').value = 1;
+
+                document.querySelectorAll('.bebida-card').forEach(c => c.classList.remove('border-primary'));
+                this.classList.add('border-primary');
+            });
+        });
+
         tamañoSelect.addEventListener('change', actualizarPrecioUnitario);
     });
 </script>
 {% endblock %}
+
 

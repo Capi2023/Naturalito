@@ -21,8 +21,12 @@ def landing(request):
 
 
 def ordenes(request):
-    ventas = Venta.objects.all()
-    return render(request, "home/Ordenes.html", {'ventas': ventas})
+    ventas_pendientes = Venta.objects.filter(estado='pendiente')
+    ventas_completadas = Venta.objects.filter(estado='completada')
+    return render(request, 'home/ordenes.html', {
+        'ventas_pendientes': ventas_pendientes,
+        'ventas_completadas': ventas_completadas
+    })
 
 
 def eliminar_orden(request, venta_id):
@@ -445,9 +449,15 @@ def agregar_detalle_venta(request, venta_id):
             return redirect('agregar_detalle_venta', venta_id=venta.id)
     else:
         detalle_venta_form = DetalleVentaForm()
-    ingredientes = Ingrediente.objects.all()
-    return render(request, 'home/agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form, 'ingredientes': ingredientes})
 
+    bebidas = Bebida.objects.all()
+    ingredientes = Ingrediente.objects.all()
+    return render(request, 'home/agregar_detalle_venta.html', {
+        'venta': venta,
+        'detalle_venta_form': detalle_venta_form,
+        'bebidas': bebidas,
+        'ingredientes': ingredientes
+    })
 
 def actualizar_venta_info(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
@@ -470,7 +480,6 @@ def actualizar_venta_info(request, venta_id):
         return JsonResponse({'success': True, 'total': str(venta.total)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
-
 
 def agregar_ingredientes(request, detalle_venta_id):
     detalle_venta = get_object_or_404(DetalleVenta, id=detalle_venta_id)
