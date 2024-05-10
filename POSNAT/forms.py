@@ -72,8 +72,6 @@ class DetalleVentaIngredienteForm(forms.ModelForm):
         fields = ['ingrediente', 'cantidad']
 
 
-class ReporteVentaForm(forms.ModelForm):
-    class Meta:
-        model = ReporteVenta
-        fields = ['fecha_inicio', 'fecha_fin', 'tipo_periodo', 'total_ventas', 'total_bebidas_vendidas', 'cantidad_de_clientes']
-
+class ReporteVentaForm(forms.Form):
+    fecha_inicio = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}))
+    fecha_fin = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}))

@@ -1,0 +1,60 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Reporte de Ventas</h1>
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Generar Reporte</button>
+    </form>
+
+    <h3>Ventas del {{ fecha_inicio }} al {{ fecha_fin }}</h3>
+    <p>Total de Ventas: {{ total_ventas }}</p>
+    <p>Total de Bebidas Vendidas: {{ total_bebidas_vendidas }}</p>
+
+    <h4>Detalles de Ventas</h4>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+            <tr>
+                <td>{{ venta.fecha_venta }}</td>
+                <td>{{ venta.cliente }}</td>
+                <td>{{ venta.total }}</td>
+                <td>{{ venta.estado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Detalles de Bebidas Vendidas</h4>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Venta</th>
+                <th>Bebida</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in detalles_ventas %}
+            <tr>
+                <td>{{ detalle.venta.id }}</td>
+                <td>{{ detalle.bebida.nombre }}</td>
+                <td>{{ detalle.cantidad }}</td>
+                <td>{{ detalle.precio_unitario }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

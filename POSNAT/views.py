@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from django.db.models import Sum
 from decimal import Decimal
 from django.urls import reverse, reverse_lazy
 from django.db import transaction
@@ -10,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils import timezone
+from datetime import timedelta
 
 
 def prueba(request):
@@ -562,5 +564,34 @@ def obtener_precio_bebida(request):
     precio_total = precio_base + precio_extra
     
     return JsonResponse({'success': True, 'precio_base': str(precio_base), 'precio_total': str(precio_total)})
+
+
+def reporte_ventas(request):
+    hoy = timezone.now().date()
+    fecha_inicio = hoy
+    fecha_fin = hoy
+
+    if request.method == 'POST':
+        form = ReporteVentaForm(request.POST)
+        if form.is_valid():
+            fecha_inicio = form.cleaned_data['fecha_inicio']
+            fecha_fin = form.cleaned_data['fecha_fin']
+    else:
+        form = ReporteVentaForm(initial={'fecha_inicio': hoy, 'fecha_fin': hoy})
+
+    ventas = Venta.objects.filter(fecha_venta__date__range=[fecha_inicio, fecha_fin])
+    total_ventas = ventas.aggregate(Sum('total'))['total__sum'] or 0
+    total_bebidas_vendidas = DetalleVenta.objects.filter(venta__in=ventas).aggregate(Sum('cantidad'))['cantidad__sum'] or 0
+    detalles_ventas = DetalleVenta.objects.filter(venta__in=ventas)
+
+    return render(request, 'home/reporte_ventas.html', {
+        'form': form,
+        'ventas': ventas,
+        'total_ventas': total_ventas,
+        'total_bebidas_vendidas': total_bebidas_vendidas,
+        'detalles_ventas': detalles_ventas,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    })
 
 
