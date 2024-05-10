@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+from decimal import Decimal
 from django.urls import reverse, reverse_lazy
 from django.db import transaction
 from .models import *
@@ -278,7 +279,7 @@ def categoria_nueva(request):
         form = CategoriaForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('inventario')
+            return redirect('bebidas')
     else:
         form = CategoriaForm()
     return render(request, 'home/Categoria_nueva.html', {'form': form})
@@ -377,7 +378,7 @@ def crear_venta(request):
         venta_form = VentaForm(request.POST)
         if venta_form.is_valid():
             venta = venta_form.save()
-            return redirect('detalle_venta', venta_id=venta.id)
+            return redirect('agregar_detalle_venta', venta_id=venta.id)
     else:
         venta_form = VentaForm()
     return render(request, 'home/crear_venta.html', {'venta_form': venta_form})
@@ -394,29 +395,40 @@ def agregar_detalle_venta(request, venta_id):
             tamaño = detalle_venta_form.cleaned_data['tamaño']
             bebida = detalle_venta_form.cleaned_data['bebida']
 
-            # Ajustar cantidad de agua o leche según el tipo de bebida
-            if bebida.categoria.nombre.lower() in ['te', 'americano', 'tisana']:
-                detalle_venta.cantidad_agua = tamaño.cantidad_agua
-                detalle_venta.cantidad_leche = 0
-            else:
-                detalle_venta.cantidad_agua = 0
-                detalle_venta.cantidad_leche = tamaño.cantidad_leche
+            # Ajustar cantidad de leche según el tamaño de la bebida
+            cantidad_a_restar = tamaño.cantidad_leche
+            precio_extra = 0
+            if tamaño.nombre.lower() == 'mediano':
+                precio_extra = 10
+            elif tamaño.nombre.lower() == 'grande':
+                precio_extra = 20
 
+            detalle_venta.precio_unitario += precio_extra
             detalle_venta.save()
-            
-            for ingrediente_id, cantidad in request.POST.items():
-                if ingrediente_id.startswith('ingrediente_'):
-                    ingrediente = get_object_or_404(Ingrediente, id=ingrediente_id.split('_')[1])
-                    DetalleVentaIngrediente.objects.create(detalle_venta=detalle_venta, ingrediente=ingrediente, cantidad=int(cantidad))
-                    ingrediente.cantidad_disponible -= int(cantidad)
-                    ingrediente.save()
-            
+
+            # Buscar el ingrediente de leche correspondiente
+            ingrediente_leche = Ingrediente.objects.filter(tipo__nombre='Leche').first()
+            if ingrediente_leche:
+                # Conversión de unidades (ejemplo: de onzas a litros)
+                if ingrediente_leche.unidad == 'onzas' and ingrediente_leche.unidad_original == 'litros':
+                    cantidad_convertida = Decimal(cantidad_a_restar) / Decimal(33.814)  # 1 litro = 33.814 onzas
+                elif ingrediente_leche.unidad == 'gramos' and ingrediente_leche.unidad_original == 'kilogramos':
+                    cantidad_convertida = Decimal(cantidad_a_restar) / Decimal(1000)  # 1 kilogramo = 1000 gramos
+                else:
+                    cantidad_convertida = Decimal(cantidad_a_restar)
+
+                # Restar la cantidad convertida del inventario disponible
+                ingrediente_leche.cantidad_disponible -= cantidad_convertida
+                ingrediente_leche.save()
+
+                DetalleVentaIngrediente.objects.create(detalle_venta=detalle_venta, ingrediente=ingrediente_leche, cantidad=cantidad_a_restar)
+
             venta.save()  # Actualiza el total de la venta
             return redirect('agregar_detalle_venta', venta_id=venta.id)
     else:
         detalle_venta_form = DetalleVentaForm()
     ingredientes = Ingrediente.objects.all()
-    return render(request, 'agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form, 'ingredientes': ingredientes})
+    return render(request, 'home/agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form, 'ingredientes': ingredientes})
 
 
 def agregar_ingredientes(request, detalle_venta_id):
@@ -436,7 +448,7 @@ def agregar_ingredientes(request, detalle_venta_id):
 
 def ver_orden(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
-    return render(request, 'ver_orden.html', {'venta': venta})
+    return render(request, 'home/ver_orden.html', {'venta': venta})
 
 
 def finalizar_venta(request, venta_id):

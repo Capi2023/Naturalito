@@ -48,4 +48,5 @@ urlpatterns = [
     path('agregar-detalle-venta/<int:venta_id>/', views.agregar_detalle_venta, name='agregar_detalle_venta'),
     path('agregar-ingredientes/<int:detalle_venta_id>/', views.agregar_ingredientes, name='agregar_ingredientes'),
     path('ver-orden/<int:venta_id>/', views.ver_orden, name='ver_orden'),
+    path('finalizar-venta/<int:venta_id>/', views.finalizar_venta, name='finalizar_venta'),  # Agrega esta línea
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

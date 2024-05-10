@@ -56,12 +56,11 @@ class VentaForm(forms.ModelForm):
 
 
 class DetalleVentaForm(forms.ModelForm):
-    tamaño = forms.ModelChoiceField(queryset=TamañoBebida.objects.all(), required=True, label='Tamaño')
+    tamaño = forms.ModelChoiceField(queryset=TamañoBebida.objects.all(), required=True)
 
     class Meta:
         model = DetalleVenta
-        fields = ['bebida', 'cantidad', 'precio_unitario', 'comentarios', 'tamaño']
-
+        fields = ['bebida', 'cantidad', 'precio_unitario', 'tamaño']
 
 
 class DetalleVentaIngredienteForm(forms.ModelForm):
