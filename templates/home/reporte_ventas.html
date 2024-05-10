@@ -56,5 +56,10 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <form method="get" action="{% url 'generar_reporte_pdf' fecha_inicio fecha_fin %}">
+        <button type="submit" class="btn btn-danger mt-3">Generar PDF</button>
+    </form>
 </div>
 {% endblock %}
+

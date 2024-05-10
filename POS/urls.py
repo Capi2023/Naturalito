@@ -53,5 +53,6 @@ urlpatterns = [
     path('ver-orden/<int:venta_id>/', views.ver_orden, name='ver_orden'),
     path('finalizar-venta/<int:venta_id>/', views.finalizar_venta, name='finalizar_venta'),  # Agrega esta línea
     path('reporte-ventas/', views.reporte_ventas, name='reporte_ventas'),
+    path('reporte-ventas/pdf/<str:fecha_inicio>/<str:fecha_fin>/', views.generar_reporte_pdf, name='generar_reporte_pdf'),
     path('eliminar-orden/<int:venta_id>/', views.eliminar_orden, name='eliminar_orden'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

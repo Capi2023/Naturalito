@@ -12,6 +12,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils import timezone
 from datetime import timedelta
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 
 def prueba(request):
@@ -594,4 +597,48 @@ def reporte_ventas(request):
         'fecha_fin': fecha_fin,
     })
 
+
+def generar_reporte_pdf(request, fecha_inicio, fecha_fin):
+    ventas = Venta.objects.filter(fecha_venta__date__range=[fecha_inicio, fecha_fin])
+    total_ventas = ventas.aggregate(Sum('total'))['total__sum'] or 0
+    total_bebidas_vendidas = DetalleVenta.objects.filter(venta__in=ventas).aggregate(Sum('cantidad'))['cantidad__sum'] or 0
+    detalles_ventas = DetalleVenta.objects.filter(venta__in=ventas)
+
+    # Crear el objeto HttpResponse con el tipo de contenido PDF.
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="reporte_ventas.pdf"'
+
+    # Crear el objeto canvas.
+    pdf = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+
+    # Título del documento
+    pdf.setFont("Helvetica-Bold", 16)
+    pdf.drawString(200, height - 50, "Reporte de Ventas")
+
+    # Información general
+    pdf.setFont("Helvetica", 12)
+    pdf.drawString(50, height - 100, f"Fecha de Inicio: {fecha_inicio}")
+    pdf.drawString(50, height - 120, f"Fecha de Fin: {fecha_fin}")
+    pdf.drawString(50, height - 140, f"Total de Ventas: {total_ventas}")
+    pdf.drawString(50, height - 160, f"Total de Bebidas Vendidas: {total_bebidas_vendidas}")
+
+    # Detalles de Ventas
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(50, height - 200, "Detalles de Ventas")
+
+    y = height - 220
+    for venta in ventas:
+        pdf.setFont("Helvetica", 10)
+        pdf.drawString(50, y, f"Venta ID: {venta.id}, Fecha: {venta.fecha_venta}, Cliente: {venta.cliente}, Total: {venta.total}")
+        y -= 20
+        for detalle in venta.detalleventa_set.all():
+            pdf.drawString(70, y, f"Bebida: {detalle.bebida.nombre}, Cantidad: {detalle.cantidad}, Precio Unitario: {detalle.precio_unitario}")
+            y -= 20
+        y -= 10
+
+    # Finalizar el PDF
+    pdf.showPage()
+    pdf.save()
+    return response
 
