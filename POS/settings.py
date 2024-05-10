@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-vth!fiok-39#w4lj5d4@7#c0qn^cso+q!ni%!mo@obj6*28_5k'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -63,7 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'POS.wsgi.application'
 
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -75,13 +75,9 @@ DATABASES = {
     }
 }
 
-
+"""
 DATABASES["default"] = dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
 """
-
-DATABASES = {
-    'default': dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
-}
 
 # postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render
 

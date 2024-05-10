@@ -41,7 +41,10 @@ class BebidaForm(forms.ModelForm):
     class Meta:
         model = Bebida
         fields = ['nombre', 'categoria', 'imagen', 'ingredientes', 'precio_base', 'detalles', 'disponible', 'tamaños']
-
+        widgets = {
+            'ingredientes': forms.CheckboxSelectMultiple,
+            'tamaños': forms.CheckboxSelectMultiple,
+        }
 
 class CategoriaForm(forms.ModelForm):
     class Meta:

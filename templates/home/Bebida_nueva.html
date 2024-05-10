@@ -38,6 +38,17 @@
             <input type="number" class="form-control" id="precio_base" name="precio_base">
         </div>
         <div class="mb-3">
+            <label for="tamaños" class="form-label">Tamaños:</label>
+            <div class="form-check">
+                {% for tamaño in form.tamaños %}
+                    <div>
+                        {{ tamaño.tag }}
+                        {{ tamaño.choice_label }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
             <label for="detalles" class="form-label">Detalles:</label>
             <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
         </div>
@@ -46,6 +57,7 @@
     </form>
 </div>
 {% endblock content %}
+
 
 
 

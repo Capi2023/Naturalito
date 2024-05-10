@@ -1,28 +1,45 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-<div class="m-5">
-    <h1>Agregar Ingredientes Extra a la Bebida</h1>
-</div>
-<div class="container-sm" style="max-width: 1200px;">
-    <form method="post" action="{% url 'agregar_ingredientes' detalle_venta.id %}" class="mt-4">
+<div class="container mt-5">
+    <h1 class="mb-4">Agregar Ingredientes Extra a la Bebida</h1>
+    <form method="post" action="{% url 'agregar_ingredientes' detalle_venta.id %}" class="needs-validation" novalidate>
         {% csrf_token %}
         {{ ingrediente_form.as_p }}
+        <input type="hidden" name="action" value="add">
         <button type="submit" class="btn btn-primary">Agregar Ingrediente</button>
     </form>
+
     <h3 class="mt-5">Ingredientes Extra en esta Bebida</h3>
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-striped mt-3">
+        <thead class="thead-dark">
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for ingrediente in detalle_venta.detalleventaingrediente_set.all %}
             <tr>
                 <td>{{ ingrediente.ingrediente.nombre }}</td>
-                <td>{{ ingrediente.cantidad }}</td>
+                <td>
+                    <form method="post" action="{% url 'agregar_ingredientes' detalle_venta.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
+                        <input type="hidden" name="action" value="update">
+                        <input type="number" name="cantidad" value="{{ ingrediente.cantidad }}" class="form-control d-inline" style="width: 100px;">
+                        <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" action="{% url 'agregar_ingredientes' detalle_venta.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <input type="hidden" name="ingrediente_id" value="{{ ingrediente.id }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -30,3 +47,4 @@
     <a href="{% url 'agregar_detalle_venta' detalle_venta.venta.id %}" class="btn btn-secondary mt-3">Terminar y Agregar Otra Bebida</a>
 </div>
 {% endblock %}
+

@@ -1,0 +1,189 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="m-5">
+    <h1>Crear Nueva Venta</h1>
+</div>
+
+<div class="container-sm" style="max-width: 1200px;">
+    <form id="venta-form" method="post" action="{% url 'crear_venta_completa' %}" class="mt-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="cliente" class="form-label">Cliente:</label>
+            <select class="form-select" id="cliente" name="cliente">
+                <option value="">Ninguno</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nombre }} {{ cliente.apellido }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="detalles" class="form-label">Detalles:</label>
+            <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="fecha_venta" class="form-label">Fecha de Venta:</label>
+            <input type="text" class="form-control" id="fecha_venta" name="fecha_venta" readonly>
+        </div>
+        <div id="bebidas-container">
+            <h3>Seleccionar Bebidas</h3>
+            {% for categoria in categorias %}
+                <h4>{{ categoria.nombre }}</h4>
+                <div id="bebidas-list-{{ categoria.id }}" class="d-flex flex-wrap">
+                    {% for bebida in bebidas %}
+                        {% if bebida.categoria.id == categoria.id %}
+                            <div class="bebida-card p-2" data-bebida-id="{{ bebida.id }}" data-precio-base="{{ bebida.precio_base }}">
+                                <img src="{{ bebida.imagen.url }}" alt="{{ bebida.nombre }}" class="bebida-imagen img-fluid">
+                                <p>{{ bebida.nombre }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <div id="detalles-bebida-container" class="mb-3"></div>
+        <div class="mb-3">
+            <label for="total" class="form-label">Total:</label>
+            <input type="text" class="form-control" id="total" name="total" readonly>
+        </div>
+        <input type="hidden" name="detalles_bebida" id="detalles_bebida">
+        <button type="submit" class="btn btn-success mt-3">Crear Venta</button>
+    </form>
+</div>
+
+<style>
+    .bebida-card {
+        width: 150px;
+        text-align: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 10px;
+        cursor: pointer;
+    }
+
+    .bebida-imagen {
+        max-width: 100px;
+        max-height: 100px;
+        margin: auto;
+    }
+
+    #bebidas-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Establecer la fecha actual en el campo de fecha
+        const fechaVenta = document.getElementById('fecha_venta');
+        fechaVenta.value = new Date().toLocaleString();
+
+        const detallesBebidaInput = document.getElementById('detalles_bebida');
+        const detallesBebidaContainer = document.getElementById('detalles-bebida-container');
+        let totalCompra = 0;
+
+        function actualizarTotal() {
+            document.getElementById('total').value = totalCompra.toFixed(2);
+        }
+
+        document.querySelectorAll('.bebida-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const bebidaId = this.dataset.bebidaId;
+                const precioBase = parseFloat(this.dataset.precioBase);
+        
+                fetch(`/obtener_detalles_bebida/${bebidaId}/`)  // Asegúrate de que esta URL es correcta
+                    .then(response => response.json())
+                    .then(data => {
+                        const bebidaDetalleDiv = document.createElement('div');
+                        bebidaDetalleDiv.classList.add('bebida-detalle');
+                        bebidaDetalleDiv.dataset.bebidaId = bebidaId;
+                        bebidaDetalleDiv.dataset.precioBase = precioBase;
+        
+                        // Renderizar los tamaños
+                        let tamañosHTML = '<h5>Tamaños</h5>';
+                        data.tamaños.forEach(tamaño => {
+                            tamañosHTML += `
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tamaño-${bebidaId}" value="${tamaño.id}" data-precio="${precioBase}">
+                                    <label class="form-check-label">${tamaño.nombre}</label>
+                                </div>
+                            `;
+                        });
+        
+                        // Renderizar los ingredientes
+                        let ingredientesHTML = '<h5>Ingredientes</h5>';
+                        data.ingredientes.forEach(ingrediente => {
+                            ingredientesHTML += `
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="ingredientes-${bebidaId}" value="${ingrediente.id}" data-precio-extra="${ingrediente.precio_extra}">
+                                    <label class="form-check-label">${ingrediente.nombre}</label>
+                                </div>
+                            `;
+                        });
+        
+                        bebidaDetalleDiv.innerHTML = `
+                            <h4>${this.querySelector('p').innerText}</h4>
+                            ${tamañosHTML}
+                            ${ingredientesHTML}
+                            <button type="button" class="btn btn-primary mt-2 agregar-bebida-btn">Agregar Bebida</button>
+                        `;
+        
+                        detallesBebidaContainer.appendChild(bebidaDetalleDiv);
+        
+                        bebidaDetalleDiv.querySelector('.agregar-bebida-btn').addEventListener('click', function() {
+                            const tamañoSeleccionado = bebidaDetalleDiv.querySelector(`input[name="tamaño-${bebidaId}"]:checked`);
+                            const ingredientesSeleccionados = bebidaDetalleDiv.querySelectorAll(`input[name="ingredientes-${bebidaId}"]:checked`);
+        
+                            if (tamañoSeleccionado) {
+                                const precioBase = parseFloat(tamañoSeleccionado.dataset.precio);
+                                let precioTotal = precioBase;
+                                const detalleBebida = {
+                                    bebida_id: bebidaId,
+                                    tamaño_id: tamañoSeleccionado.value,
+                                    ingredientes: Array.from(ingredientesSeleccionados).map(input => {
+                                        precioTotal += parseFloat(input.dataset.precio_extra);
+                                        return {
+                                            id: input.value,
+                                            nombre: input.nextElementSibling.textContent,
+                                            cantidad: 1  // Esto puede ser dinámico si tienes un campo de cantidad para los ingredientes
+                                        };
+                                    })
+                                };
+        
+                                totalCompra += precioTotal;
+                                actualizarTotal();
+        
+                                // Agregar el detalle de la bebida al formulario
+                                const detallesBebidaArray = JSON.parse(detallesBebidaInput.value || '[]');
+                                detallesBebidaArray.push(detalleBebida);
+                                detallesBebidaInput.value = JSON.stringify(detallesBebidaArray);
+        
+                                // Limpiar la selección actual
+                                detallesBebidaContainer.removeChild(bebidaDetalleDiv);
+                            } else {
+                                alert("Selecciona un tamaño para la bebida.");
+                            }
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching beverage details:", error);
+                    });
+            });
+        });
+
+        document.getElementById('venta-form').addEventListener('submit', function(event) {
+            // Prevenir el envío si no hay bebidas agregadas
+            if (!detallesBebidaInput.value) {
+                event.preventDefault();
+                alert('Por favor, agrega al menos una bebida.');
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+
+
+

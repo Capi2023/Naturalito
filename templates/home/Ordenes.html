@@ -5,18 +5,20 @@
     <h2>Órdenes abiertas</h2>
     <br>
     <br>
-    <a href="{% url 'crear_venta' %}" class="btn btn-outline-info">Nueva Orden</a>
+    <button id="nueva-orden-btn" class="btn btn-outline-info">Nueva Orden</button>
 </div>
 
 <div class="container-sm" style="max-width: 1200px;">
     <table class="table table-striped">
         <thead>
-            <th>Numero de Orden</th>
-            <th>Bebidas en la Orden</th>
-            <th>Total</th>
-            <th>Cliente</th>
-            <th>Ver</th>
-            <th>Eliminar</th>
+            <tr>
+                <th>Numero de Orden</th>
+                <th>Bebidas en la Orden</th>
+                <th>Total</th>
+                <th>Cliente</th>
+                <th>Ver</th>
+                <th>Eliminar</th>
+            </tr>
         </thead>
         <tbody>
             {% for venta in ventas %}
@@ -37,6 +39,32 @@
     </table>
 </div>
 
+<script>
+document.getElementById('nueva-orden-btn').addEventListener('click', function() {
+    fetch("{% url 'crear_venta' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            fecha_venta: new Date().toISOString(),
+            total: 0,
+            estado: 'pendiente',
+            detalles: ''
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "{% url 'agregar_detalle_venta' 0 %}".replace('0', data.venta_id);
+        } else {
+            alert('Error al crear la orden');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
 {% endblock %}
 
 

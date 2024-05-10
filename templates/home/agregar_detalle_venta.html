@@ -1,45 +1,187 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-<div class="m-5">
-    <h1>Agregar Bebida a la Venta</h1>
-</div>
-<div class="container-sm" style="max-width: 1200px;">
-    <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="mt-4">
+<div class="container mt-5">
+    <h1 class="mb-4">Agregar Bebida a la Venta</h1>
+    
+    <!-- Información de la venta -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Información de la Venta
+        </div>
+        <div class="card-body">
+            <form id="venta-info-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="telefono-cliente" class="form-label">Teléfono del Cliente</label>
+                    <input type="text" class="form-control" id="telefono-cliente" name="telefono-cliente" placeholder="Ingrese el número de teléfono del cliente">
+                    <ul id="cliente-lista" class="list-group mt-2" style="display: none;"></ul>
+                </div>
+                <div class="mb-3">
+                    <label for="detalles" class="form-label">Detalles</label>
+                    <textarea class="form-control" id="detalles" name="detalles" rows="3"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="fecha-venta" class="form-label">Fecha de Venta</label>
+                    <input type="text" class="form-control" id="fecha-venta" name="fecha-venta" value="{{ venta.fecha_venta }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="total" class="form-label">Total</label>
+                    <input type="text" class="form-control" id="total" name="total" value="{{ venta.total }}" readonly>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Formulario para agregar bebidas -->
+    <form method="post" action="{% url 'agregar_detalle_venta' venta.id %}" class="needs-validation" novalidate>
         {% csrf_token %}
-        {{ detalle_venta_form.as_p }}
+        <div class="mb-3">
+            {{ detalle_venta_form.bebida.label_tag }} {{ detalle_venta_form.bebida }}
+        </div>
+        <div class="mb-3">
+            {{ detalle_venta_form.cantidad.label_tag }} {{ detalle_venta_form.cantidad }}
+        </div>
+        <div class="mb-3">
+            {{ detalle_venta_form.tamaño.label_tag }} {{ detalle_venta_form.tamaño }}
+        </div>
+        <div class="mb-3">
+            <label for="precio-unitario" class="form-label">Precio Unitario</label>
+            <input type="text" class="form-control" id="precio-unitario" name="precio_unitario" readonly>
+        </div>
+        <input type="hidden" id="precio-base" name="precio_base">
         <button type="submit" class="btn btn-primary">Agregar Bebida</button>
     </form>
-    <h3 class="mt-5">Bebidas en esta Venta</h3>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Ingredientes Extra</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for detalle in venta.detalleventa_set.all %}
-            <tr>
-                <td>{{ detalle.bebida.nombre }}</td>
-                <td>{{ detalle.cantidad }}</td>
-                <td>{{ detalle.precio_unitario }}</td>
-                <td>
-                    {% for ingrediente in detalle.ingredientes_extra.all %}
-                        {{ ingrediente.nombre }}<br>
-                    {% endfor %}
-                </td>
-                <td>
-                    <a href="{% url 'agregar_ingredientes' detalle.id %}" class="btn btn-outline-info">Agregar Ingredientes</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+
+    <!-- Tabla de bebidas en la venta -->
+    <div class="mt-5">
+        <h3>Bebidas en esta Venta</h3>
+        <table class="table table-striped mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Ingredientes Extra</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in venta.detalleventa_set.all %}
+                <tr>
+                    <td>{{ detalle.bebida.nombre }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>{{ detalle.precio_unitario }}</td>
+                    <td>
+                        {% for ingrediente in detalle.ingredientes_extra.all %}
+                            {{ ingrediente.nombre }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{% url 'agregar_ingredientes' detalle.id %}" class="btn btn-outline-info btn-sm">Agregar Ingredientes</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const telefonoInput = document.getElementById('telefono-cliente');
+        const detallesInput = document.getElementById('detalles');
+        const totalInput = document.getElementById('total');
+        const clienteLista = document.getElementById('cliente-lista');
+        const bebidaSelect = document.getElementById('id_bebida');
+        const tamañoSelect = document.getElementById('id_tamaño');
+        const precioBaseInput = document.getElementById('precio-base');
+        const precioUnitarioInput = document.getElementById('precio-unitario');
+
+        // Función para actualizar la información de la venta
+        function actualizarVentaInfo() {
+            fetch("{% url 'actualizar_venta_info' venta.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    telefono: telefonoInput.value,
+                    detalles: detallesInput.value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    totalInput.value = data.total;
+                } else {
+                    alert('Error al actualizar la información de la venta');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Función para buscar clientes
+        function buscarClientes() {
+            fetch("{% url 'buscar_clientes' %}?telefono=" + telefonoInput.value, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                clienteLista.innerHTML = '';
+                if (data.clientes.length > 0) {
+                    clienteLista.style.display = 'block';
+                    data.clientes.forEach(cliente => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.textContent = cliente.nombre + ' - ' + cliente.telefono;
+                        li.addEventListener('click', function() {
+                            telefonoInput.value = cliente.telefono;
+                            actualizarVentaInfo();
+                            clienteLista.style.display = 'none';
+                        });
+                        clienteLista.appendChild(li);
+                    });
+                } else {
+                    clienteLista.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Función para actualizar el precio unitario
+        function actualizarPrecioUnitario() {
+            const bebidaId = bebidaSelect.value;
+            const tamañoId = tamañoSelect.value;
+            if (bebidaId && tamañoId) {
+                fetch("{% url 'obtener_precio_bebida' %}?bebida=" + bebidaId + "&tamaño=" + tamañoId, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        precioBaseInput.value = data.precio_base;
+                        precioUnitarioInput.value = data.precio_total;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Event listeners para buscar clientes y actualizar información de la venta
+        telefonoInput.addEventListener('input', buscarClientes);
+        detallesInput.addEventListener('change', actualizarVentaInfo);
+        bebidaSelect.addEventListener('change', actualizarPrecioUnitario);
+        tamañoSelect.addEventListener('change', actualizarPrecioUnitario);
+    });
+</script>
 {% endblock %}
 

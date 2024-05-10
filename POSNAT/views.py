@@ -9,6 +9,7 @@ from .forms import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.utils import timezone
 
 
 def prueba(request):
@@ -20,7 +21,14 @@ def landing(request):
 
 
 def ordenes(request):
-    return render(request, "home/Ordenes.html", {})
+    ventas = Venta.objects.all()
+    return render(request, "home/Ordenes.html", {'ventas': ventas})
+
+
+def eliminar_orden(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
+    venta.delete()
+    return redirect('ordenes')
 
 
 def menu(request):
@@ -247,8 +255,14 @@ def bebida_nueva(request):
     
     ingredientes = Ingrediente.objects.all()
     categorias = Categoria.objects.all()
+    tamaños = TamañoBebida.objects.all()
 
-    return render(request, 'home/Bebida_nueva.html', {'form': form, 'ingredientes': ingredientes, 'categorias': categorias})
+    return render(request, 'home/bebida_nueva.html', {
+        'form': form, 
+        'ingredientes': ingredientes, 
+        'categorias': categorias,
+        'tamaños': tamaños
+    })
 
 
 def bebida_actualizar(request, bebida_id):
@@ -375,10 +389,14 @@ def vista_principal(request):
 
 def crear_venta(request):
     if request.method == 'POST':
-        venta_form = VentaForm(request.POST)
-        if venta_form.is_valid():
-            venta = venta_form.save()
-            return redirect('agregar_detalle_venta', venta_id=venta.id)
+        venta = Venta(
+            fecha_venta=timezone.now(),
+            total=0,
+            estado='pendiente',
+            detalles=''
+        )
+        venta.save()
+        return JsonResponse({'success': True, 'venta_id': venta.id})
     else:
         venta_form = VentaForm()
     return render(request, 'home/crear_venta.html', {'venta_form': venta_form})
@@ -431,20 +449,60 @@ def agregar_detalle_venta(request, venta_id):
     return render(request, 'home/agregar_detalle_venta.html', {'venta': venta, 'detalle_venta_form': detalle_venta_form, 'ingredientes': ingredientes})
 
 
+def actualizar_venta_info(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        telefono = data.get('telefono')
+        detalles = data.get('detalles')
+
+        if telefono:
+            cliente = Cliente.objects.filter(telefono=telefono).first()
+            if cliente:
+                venta.cliente = cliente
+            else:
+                return JsonResponse({'success': False, 'error': 'Cliente no encontrado'})
+
+        if detalles:
+            venta.detalles = detalles
+
+        venta.save()
+        return JsonResponse({'success': True, 'total': str(venta.total)})
+
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
+
 def agregar_ingredientes(request, detalle_venta_id):
     detalle_venta = get_object_or_404(DetalleVenta, id=detalle_venta_id)
+    
     if request.method == 'POST':
-        ingrediente_form = DetalleVentaIngredienteForm(request.POST)
-        if ingrediente_form.is_valid():
-            detalle_ingrediente = ingrediente_form.save(commit=False)
-            detalle_ingrediente.detalle_venta = detalle_venta
+        ingrediente_id = request.POST.get('ingrediente_id')
+        cantidad = request.POST.get('cantidad')
+        action = request.POST.get('action')
+
+        if action == 'add':
+            ingrediente_form = DetalleVentaIngredienteForm(request.POST)
+            if ingrediente_form.is_valid():
+                detalle_ingrediente = ingrediente_form.save(commit=False)
+                detalle_ingrediente.detalle_venta = detalle_venta
+                detalle_ingrediente.save()
+                return redirect('agregar_ingredientes', detalle_venta_id=detalle_venta.id)
+        elif action == 'update' and ingrediente_id and cantidad:
+            detalle_ingrediente = get_object_or_404(DetalleVentaIngrediente, id=ingrediente_id)
+            detalle_ingrediente.cantidad = cantidad
             detalle_ingrediente.save()
+            return redirect('agregar_ingredientes', detalle_venta_id=detalle_venta.id)
+        elif action == 'delete' and ingrediente_id:
+            detalle_ingrediente = get_object_or_404(DetalleVentaIngrediente, id=ingrediente_id)
+            detalle_ingrediente.delete()
             return redirect('agregar_ingredientes', detalle_venta_id=detalle_venta.id)
     else:
         ingrediente_form = DetalleVentaIngredienteForm()
-    
-    return render(request, 'home/agregar_ingredientes.html', {'detalle_venta': detalle_venta, 'ingrediente_form': ingrediente_form})
 
+    return render(request, 'home/agregar_ingredientes.html', {
+        'detalle_venta': detalle_venta,
+        'ingrediente_form': ingrediente_form
+    })
 
 def ver_orden(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
@@ -456,4 +514,44 @@ def finalizar_venta(request, venta_id):
     venta.estado = 'completada'
     venta.save()
     return redirect('ordenes')
+
+
+def ventas(request):
+    ventas = Venta.objects.filter(estado='pendiente')  # O cualquier condición que quieras
+    venta_form = VentaForm()
+    detalle_venta_form = DetalleVentaForm()
+    ingrediente_form = DetalleVentaIngredienteForm()
+    return render(request, 'home/venta_integrada.html', {
+        'ventas': ventas,
+        'venta_form': venta_form,
+        'detalle_venta_form': detalle_venta_form,
+        'ingrediente_form': ingrediente_form
+    })
+
+def buscar_clientes(request):
+    telefono = request.GET.get('telefono', '')
+    clientes = Cliente.objects.filter(telefono__icontains=telefono)[:5]  # Limita a los primeros 5 resultados
+    data = [{'nombre': cliente.nombre, 'telefono': cliente.telefono} for cliente in clientes]
+    return JsonResponse({'clientes': data})
+
+
+def obtener_precio_bebida(request):
+    bebida_id = request.GET.get('bebida')
+    tamaño_id = request.GET.get('tamaño')
+    
+    bebida = get_object_or_404(Bebida, id=bebida_id)
+    tamaño = get_object_or_404(TamañoBebida, id=tamaño_id)
+    
+    precio_base = bebida.precio_base
+    precio_extra = 0
+    
+    if tamaño.nombre.lower() == 'mediano':
+        precio_extra = 10
+    elif tamaño.nombre.lower() == 'grande':
+        precio_extra = 20
+    
+    precio_total = precio_base + precio_extra
+    
+    return JsonResponse({'success': True, 'precio_base': str(precio_base), 'precio_total': str(precio_total)})
+
 

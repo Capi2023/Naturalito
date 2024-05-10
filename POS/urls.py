@@ -44,9 +44,13 @@ urlpatterns = [
     path('seleccionar_ingredientes/', views.seleccionar_ingredientes, name='seleccionar_ingredientes'),
     path('guardar_ingredientes/', views.guardar_ingredientes, name='guardar_ingredientes'),
     # Prueba
+    path('obtener-precio-bebida/', views.obtener_precio_bebida, name='obtener_precio_bebida'),
+    path('buscar-clientes/', views.buscar_clientes, name='buscar_clientes'),
+    path('actualizar-venta-info/<int:venta_id>/', views.actualizar_venta_info, name='actualizar_venta_info'),
     path('crear-venta/', views.crear_venta, name='crear_venta'),
     path('agregar-detalle-venta/<int:venta_id>/', views.agregar_detalle_venta, name='agregar_detalle_venta'),
     path('agregar-ingredientes/<int:detalle_venta_id>/', views.agregar_ingredientes, name='agregar_ingredientes'),
     path('ver-orden/<int:venta_id>/', views.ver_orden, name='ver_orden'),
     path('finalizar-venta/<int:venta_id>/', views.finalizar_venta, name='finalizar_venta'),  # Agrega esta línea
+    path('eliminar-orden/<int:venta_id>/', views.eliminar_orden, name='eliminar_orden'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

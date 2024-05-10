@@ -1,0 +1,183 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Gestión de Ventas</h1>
+    
+    <!-- Botón para abrir el modal de crear venta -->
+    <button type="button" class="btn btn-primary mb-4" data-bs-toggle="modal" data-bs-target="#crearVentaModal">
+        Crear Nueva Venta
+    </button>
+    
+    <!-- Tabla de ventas -->
+    <div class="table-responsive">
+        <h3>Ventas Activas</h3>
+        <table class="table table-striped mt-3">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="ventas-table-body">
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.fecha_venta }}</td>
+                    <td>{{ venta.total }}</td>
+                    <td>{{ venta.estado }}</td>
+                    <td>
+                        <button class="btn btn-outline-info btn-sm" onclick="abrirDetalleVentaModal({{ venta.id }})">Agregar Detalles</button>
+                        <button class="btn btn-secondary btn-sm" onclick="finalizarVenta({{ venta.id }})">Finalizar Venta</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal de crear venta -->
+<div class="modal fade" id="crearVentaModal" tabindex="-1" aria-labelledby="crearVentaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="crear-venta-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearVentaModalLabel">Crear Nueva Venta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ venta_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Crear Venta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de agregar detalles de venta -->
+<div class="modal fade" id="detalleVentaModal" tabindex="-1" aria-labelledby="detalleVentaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="detalle-venta-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalleVentaModalLabel">Agregar Detalle de Venta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ detalle_venta_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Agregar Detalle</button>
+                </div>
+            </form>
+            <div class="container mt-3">
+                <h3>Detalles de esta Venta</h3>
+                <table class="table table-striped mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Ingredientes Extra</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detalles-table-body">
+                        <!-- Aquí se cargarán los detalles de la venta mediante AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de agregar ingredientes -->
+<div class="modal fade" id="ingredientesModal" tabindex="-1" aria-labelledby="ingredientesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="ingredientes-form">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ingredientesModalLabel">Agregar Ingredientes Extra</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ ingrediente_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Agregar Ingrediente</button>
+                </div>
+            </form>
+            <div class="container mt-3">
+                <h3>Ingredientes Extra</h3>
+                <table class="table table-striped mt-3">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ingredientes-table-body">
+                        <!-- Aquí se cargarán los ingredientes extra mediante AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirDetalleVentaModal(ventaId) {
+        // Aquí puedes cargar los detalles de la venta mediante AJAX
+        $('#detalleVentaModal').modal('show');
+    }
+
+    function finalizarVenta(ventaId) {
+        // Aquí puedes finalizar la venta mediante AJAX
+    }
+
+    $('#crear-venta-form').submit(function(event) {
+        event.preventDefault();
+        // Aquí puedes manejar la creación de la venta mediante AJAX
+    });
+
+    $('#detalle-venta-form').submit(function(event) {
+        event.preventDefault();
+        // Aquí puedes manejar la creación de los detalles de la venta mediante AJAX
+    });
+
+    $('#ingredientes-form').submit(function(event) {
+        event.preventDefault();
+        // Aquí puedes manejar la adición de ingredientes extra mediante AJAX
+    });
+
+    $('#crear-venta-form').submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'crear_venta' %}",
+            data: $(this).serialize(),
+            success: function(response) {
+                $('#crearVentaModal').modal('hide');
+                // Actualiza la tabla de ventas
+                $('#ventas-table-body').append('<tr><td>' + response.fecha_venta + '</td><td>' + response.total + '</td><td>' + response.estado + '</td><td><button class="btn btn-outline-info btn-sm" onclick="abrirDetalleVentaModal(' + response.id + ')">Agregar Detalles</button><button class="btn btn-secondary btn-sm" onclick="finalizarVenta(' + response.id + ')">Finalizar Venta</button></td></tr>');
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    });
+    
+
+</script>
+</div>
+{% endblock %}
