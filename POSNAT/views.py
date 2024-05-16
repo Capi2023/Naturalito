@@ -266,7 +266,7 @@ def bebida_nueva(request):
     categorias = Categoria.objects.all()
     tamaños = TamañoBebida.objects.all()
 
-    return render(request, 'home/bebida_nueva.html', {
+    return render(request, 'home/Bebida_nueva.html', {
         'form': form, 
         'ingredientes': ingredientes, 
         'categorias': categorias,
