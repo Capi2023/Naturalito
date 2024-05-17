@@ -101,6 +101,8 @@
                     </tbody>
                 </table>
                 <a href="{% url 'finalizar_venta' venta.id %}" class="btn btn-secondary mt-3">Finalizar Venta</a>
+                <a href="{% url 'poner_venta_pendiente' venta.id %}" class="btn btn-warning mt-3">Poner en Pendiente</a>
+                <a href="{% url 'cancelar_venta' venta.id %}" class="btn btn-danger mt-3">Cancelar Venta</a>
             </div>
         </div>
     </div>

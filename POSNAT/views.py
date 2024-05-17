@@ -19,18 +19,14 @@ from django.core.paginator import Paginator
 from datetime import datetime
 
 
-
-def prueba(request):
-    return render(request, "home/prueba.html", {})
-
-
 def landing(request):
     return render(request, "home/landing_page.html", {})
 
 
 def ordenes(request):
+    today = timezone.localdate()  # Obtener la fecha actual
     ventas_pendientes = Venta.objects.filter(estado='pendiente')
-    ventas_completadas = Venta.objects.filter(estado='completada')
+    ventas_completadas = Venta.objects.filter(estado='completada', fecha_venta__date=today)
     return render(request, 'home/Ordenes.html', {
         'ventas_pendientes': ventas_pendientes,
         'ventas_completadas': ventas_completadas
@@ -45,14 +41,6 @@ def eliminar_orden(request, venta_id):
 
 def menu(request):
     return render(request, "home/Menu.html", {})
-
-
-def carrito(request):
-    return render(request, "home/Carrito.html", {})
-
-
-def recetas(request):
-    return render(request, "home/Recetas.html", {})
 
 
 def clientes(request):
@@ -456,6 +444,15 @@ def agregar_detalle_venta(request, venta_id):
             detalle_venta.precio_unitario += precio_extra
             detalle_venta.save()
 
+            if venta.cliente:
+                puntos_por_bebida = 100 * detalle_venta.cantidad
+                venta.cliente.añadir_puntos(puntos_por_bebida)
+
+            ingredientes_extra = request.POST.getlist('ingredientes_extra')
+            if ingredientes_extra:
+                puntos_por_ingredientes = 50 * len(ingredientes_extra)
+                venta.cliente.añadir_puntos(puntos_por_ingredientes)
+
             # Buscar el ingrediente de leche correspondiente
             ingrediente_leche = Ingrediente.objects.filter(tipo__nombre='Leche').first()
             if ingrediente_leche:
@@ -487,6 +484,7 @@ def agregar_detalle_venta(request, venta_id):
         'ingredientes': ingredientes
     })
 
+
 def actualizar_venta_info(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
     if request.method == 'POST':
@@ -508,6 +506,7 @@ def actualizar_venta_info(request, venta_id):
         return JsonResponse({'success': True, 'total': str(venta.total)})
 
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)
+
 
 def agregar_ingredientes(request, detalle_venta_id):
     detalle_venta = get_object_or_404(DetalleVenta, id=detalle_venta_id)
@@ -541,6 +540,7 @@ def agregar_ingredientes(request, detalle_venta_id):
         'ingrediente_form': ingrediente_form
     })
 
+
 def ver_orden(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
     return render(request, 'home/ver_orden.html', {'venta': venta})
@@ -548,13 +548,30 @@ def ver_orden(request, venta_id):
 
 def finalizar_venta(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
+    venta.estado = 'completada'
+    venta.save()
+    return redirect('ordenes')
+
+
+def poner_venta_pendiente(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id)
     venta.estado = 'pendiente'
     venta.save()
     return redirect('ordenes')
 
 
+def cancelar_venta(request, venta_id):
+    try:
+        venta = Venta.objects.get(id=venta_id)
+        # Si decides eliminar la venta descomenta la siguiente línea
+        venta.delete()
+        return redirect('ordenes')  # Cambia 'ruta_a_redirigir' por la ruta donde quieres que el usuario sea redirigido
+    except Venta.DoesNotExist:
+        return redirect('ordenes')  # Manejo en caso de que la venta ya no exista
+
+
 def ventas(request):
-    ventas = Venta.objects.filter(estado='pendiente')  # O cualquier condición que quieras
+    ventas = Venta.objects.filter(estado='pendiente')
     venta_form = VentaForm()
     detalle_venta_form = DetalleVentaForm()
     ingrediente_form = DetalleVentaIngredienteForm()
@@ -564,6 +581,7 @@ def ventas(request):
         'detalle_venta_form': detalle_venta_form,
         'ingrediente_form': ingrediente_form
     })
+
 
 def buscar_clientes(request):
     telefono = request.GET.get('telefono', '')

@@ -46,6 +46,7 @@ class BebidaForm(forms.ModelForm):
             'tamaños': forms.CheckboxSelectMultiple,
         }
 
+
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria

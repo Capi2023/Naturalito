@@ -93,6 +93,10 @@ class Cliente(models.Model):
     correo = models.EmailField(unique=True)
     puntos = models.IntegerField(default=0)
 
+    def añadir_puntos(self, puntos):
+        self.puntos += puntos
+        self.save()
+
     def __str__(self):
         return f"{self.nombre} {self.apellido} - Puntos: {self.puntos}"
 
