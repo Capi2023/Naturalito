@@ -4,7 +4,7 @@
 <div class="m-5">
     <h1>Agregar Nuevo Proveedor</h1>
 </div>
-<div class="container-sm" style="max-width: 1200px;">
+<div class="container-sm table-responsive" style="max-width: 1200px;">
     <form method="post" action="{% url 'proveedores_nuevo' %}" class="mt-4">
         {% csrf_token %}
         <div class="mb-3">

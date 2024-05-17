@@ -4,7 +4,7 @@
 <div class="m-5">
     <h1>Agregar Nueva Bebida</h1>
 </div>
-<div class="container-sm" style="max-width: 1200px;">
+<div class="container-sm table-responsive" style="max-width: 1200px;">
     <form method="post" action="{% url 'bebida_nueva' %}" class="mt-4" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-3">

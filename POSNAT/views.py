@@ -525,7 +525,7 @@ def ver_orden(request, venta_id):
 
 def finalizar_venta(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
-    venta.estado = 'completada'
+    venta.estado = 'pendiente'
     venta.save()
     return redirect('ordenes')
 

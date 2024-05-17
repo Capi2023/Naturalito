@@ -1,7 +1,7 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 table-responsive">
     <h1 class="mb-4">Agregar Ingredientes Extra a la Bebida</h1>
     <form method="post" action="{% url 'agregar_ingredientes' detalle_venta.id %}" class="needs-validation" novalidate>
         {% csrf_token %}
