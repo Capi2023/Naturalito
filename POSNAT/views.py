@@ -16,6 +16,8 @@ from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from django.core.paginator import Paginator
+from datetime import datetime
+
 
 
 def prueba(request):
@@ -608,57 +610,79 @@ def reporte_ventas(request):
     total_bebidas_vendidas = DetalleVenta.objects.filter(venta__in=ventas).aggregate(Sum('cantidad'))['cantidad__sum'] or 0
     detalles_ventas = DetalleVenta.objects.filter(venta__in=ventas)
 
+    # Calcular el inventario usado y los ingresos de ingredientes extras
+    total_ingresos_extras = 0
+    total_ingredientes_usados = {}
+    for detalle in detalles_ventas:
+        for ingrediente in detalle.ingredientes_extra.all():
+            cantidad_usada = detalle.detalleventaingrediente_set.get(ingrediente=ingrediente).cantidad
+            total_ingresos_extras += cantidad_usada * ingrediente.precio_extra
+            if ingrediente.nombre in total_ingredientes_usados:
+                total_ingredientes_usados[ingrediente.nombre] += cantidad_usada
+            else:
+                total_ingredientes_usados[ingrediente.nombre] = cantidad_usada
+
     return render(request, 'home/reporte_ventas.html', {
         'form': form,
         'ventas': ventas,
         'total_ventas': total_ventas,
         'total_bebidas_vendidas': total_bebidas_vendidas,
         'detalles_ventas': detalles_ventas,
+        'total_ingresos_extras': total_ingresos_extras,
+        'total_ingredientes_usados': total_ingredientes_usados,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
     })
 
 
 def generar_reporte_pdf(request, fecha_inicio, fecha_fin):
+    fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
     ventas = Venta.objects.filter(fecha_venta__date__range=[fecha_inicio, fecha_fin])
     total_ventas = ventas.aggregate(Sum('total'))['total__sum'] or 0
     total_bebidas_vendidas = DetalleVenta.objects.filter(venta__in=ventas).aggregate(Sum('cantidad'))['cantidad__sum'] or 0
     detalles_ventas = DetalleVenta.objects.filter(venta__in=ventas)
 
-    # Crear el objeto HttpResponse con el tipo de contenido PDF.
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="reporte_ventas.pdf"'
 
-    # Crear el objeto canvas.
     pdf = canvas.Canvas(response, pagesize=letter)
     width, height = letter
 
-    # Título del documento
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(200, height - 50, "Reporte de Ventas")
+    pdf.drawString(30, height - 50, "Reporte de Ventas: Detalle Completo")
 
-    # Información general
     pdf.setFont("Helvetica", 12)
-    pdf.drawString(50, height - 100, f"Fecha de Inicio: {fecha_inicio}")
-    pdf.drawString(50, height - 120, f"Fecha de Fin: {fecha_fin}")
-    pdf.drawString(50, height - 140, f"Total de Ventas: {total_ventas}")
-    pdf.drawString(50, height - 160, f"Total de Bebidas Vendidas: {total_bebidas_vendidas}")
+    pdf.drawString(30, height - 80, f"Fecha de Inicio: {fecha_inicio.strftime('%d/%m/%Y')}")
+    pdf.drawString(30, height - 100, f"Fecha de Fin: {fecha_fin.strftime('%d/%m/%Y')}")
+    pdf.drawString(30, height - 120, f"Total de Ventas: ${total_ventas:.2f}")
+    pdf.drawString(30, height - 140, f"Total de Bebidas Vendidas: {total_bebidas_vendidas}")
 
     # Detalles de Ventas
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(50, height - 200, "Detalles de Ventas")
-
-    y = height - 220
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(30, height - 180, "Detalles de Ventas:")
+    y = height - 200
+    pdf.setFont("Helvetica", 10)
     for venta in ventas:
-        pdf.setFont("Helvetica", 10)
-        pdf.drawString(50, y, f"Venta ID: {venta.id}, Fecha: {venta.fecha_venta}, Cliente: {venta.cliente}, Total: {venta.total}")
+        pdf.drawString(30, y, f"ID Venta: {venta.id} - Fecha: {venta.fecha_venta.strftime('%d/%m/%Y %H:%M')} - Cliente: {venta.cliente} - Total: ${venta.total:.2f}")
         y -= 20
         for detalle in venta.detalleventa_set.all():
-            pdf.drawString(70, y, f"Bebida: {detalle.bebida.nombre}, Cantidad: {detalle.cantidad}, Precio Unitario: {detalle.precio_unitario}")
+            pdf.drawString(50, y, f"Bebida: {detalle.bebida.nombre}, Cantidad: {detalle.cantidad}, Precio Unitario: ${detalle.precio_unitario:.2f}")
             y -= 20
         y -= 10
 
-    # Finalizar el PDF
+    # Información sobre Ingredientes Extras
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(30, y, "Ingredientes Extras Usados:")
+    y -= 20
+    pdf.setFont("Helvetica", 10)
+    for detalle in detalles_ventas:
+        for ingrediente in detalle.ingredientes_extra.all():
+            detalle_ingrediente = detalle.detalleventaingrediente_set.get(ingrediente=ingrediente)
+            pdf.drawString(50, y, f"Ingrediente: {ingrediente.nombre}, Cantidad: {detalle_ingrediente.cantidad}, Costo Extra: ${ingrediente.precio_extra * detalle_ingrediente.cantidad:.2f}")
+            y -= 20
+        y -= 10
+
     pdf.showPage()
     pdf.save()
     return response

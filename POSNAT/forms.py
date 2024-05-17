@@ -73,5 +73,22 @@ class DetalleVentaIngredienteForm(forms.ModelForm):
 
 
 class ReporteVentaForm(forms.Form):
-    fecha_inicio = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}))
-    fecha_fin = forms.DateField(widget=forms.TextInput(attrs={'type': 'date'}))
+    fecha_inicio = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',  # Aplica estilos de Bootstrap
+                'placeholder': 'Fecha de inicio'  # Placeholder si es necesario
+            }
+        )
+    )
+    fecha_fin = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                'type': 'date',
+                'class': 'form-control',  # Aplica estilos de Bootstrap
+                'placeholder': 'Fecha de fin'  # Placeholder si es necesario
+            }
+        )
+    )
+

@@ -3,63 +3,118 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="mb-4">Reporte de Ventas</h1>
-    <form method="post" class="mb-4">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Generar Reporte</button>
-    </form>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="post" class="form-inline">
+                {% csrf_token %}
+                <div class="form-group mr-2">
+                    {{ form.fecha_inicio.label_tag }}
+                    {{ form.fecha_inicio }}
+                </div>
+                <div class="form-group mr-2">
+                    {{ form.fecha_fin.label_tag }}
+                    {{ form.fecha_fin }}
+                </div>
+                </br>
+                <button type="submit" class="btn btn-primary">Generar Reporte</button>
+            </form>
+        </div>
+    </div>
 
-    <h3>Ventas del {{ fecha_inicio }} al {{ fecha_fin }}</h3>
-    <p>Total de Ventas: {{ total_ventas }}</p>
-    <p>Total de Bebidas Vendidas: {{ total_bebidas_vendidas }}</p>
+    <div class="col-md-6 d-flex">
+        <form method="get" action="{% url 'generar_reporte_pdf' fecha_inicio fecha_fin %}">
+            <button type="submit" class="btn btn-danger">Generar PDF</button>
+        </form>
+    </div>
 
-    <h4>Detalles de Ventas</h4>
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Cliente</th>
-                <th>Total</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for venta in ventas %}
-            <tr>
-                <td>{{ venta.fecha_venta }}</td>
-                <td>{{ venta.cliente }}</td>
-                <td>{{ venta.total }}</td>
-                <td>{{ venta.estado }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="mb-4">
+        <h3>Ventas del {{ fecha_inicio }} al {{ fecha_fin }}</h3>
+        <p><strong>Total de Ventas:</strong> ${{ total_ventas }}</p>
+        <p><strong>Total de Bebidas Vendidas:</strong> {{ total_bebidas_vendidas }}</p>
+    </div>
 
-    <h4>Detalles de Bebidas Vendidas</h4>
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Venta</th>
-                <th>Bebida</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for detalle in detalles_ventas %}
-            <tr>
-                <td>{{ detalle.venta.id }}</td>
-                <td>{{ detalle.bebida.nombre }}</td>
-                <td>{{ detalle.cantidad }}</td>
-                <td>{{ detalle.precio_unitario }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Detalles de Ventas</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.fecha_venta }}</td>
+                        <td>{{ venta.cliente }}</td>
+                        <td>${{ venta.total }}</td>
+                        <td>{{ venta.estado }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <form method="get" action="{% url 'generar_reporte_pdf' fecha_inicio fecha_fin %}">
-        <button type="submit" class="btn btn-danger mt-3">Generar PDF</button>
-    </form>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Detalles de Bebidas Vendidas</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Venta</th>
+                        <th>Bebida</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detalle in detalles_ventas %}
+                    <tr>
+                        <td>{{ detalle.venta.id }}</td>
+                        <td>{{ detalle.bebida.nombre }}</td>
+                        <td>{{ detalle.cantidad }}</td>
+                        <td>${{ detalle.precio_unitario }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p><strong>Total Ingresos por Ingredientes Extras:</strong> ${{ total_ingresos_extras }}</p>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Uso de Ingredientes</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ingrediente</th>
+                        <th>Cantidad Usada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nombre, cantidad in total_ingredientes_usados.items %}
+                    <tr>
+                        <td>{{ nombre }}</td>
+                        <td>{{ cantidad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
+
 
