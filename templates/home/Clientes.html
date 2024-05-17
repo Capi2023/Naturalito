@@ -37,6 +37,65 @@
     </table>
 </div>
 
+<nav aria-label="Navegación de página de clientes">
+    <ul class="pagination justify-content-center">
+      {% if clientes.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page=1" aria-label="Primera">
+            &laquo; Primera
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ clientes.previous_page_number }}" aria-label="Antes">
+            Antes
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">
+            &laquo; Primera
+          </span>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            Antes
+          </span>
+        </li>
+      {% endif %}
+  
+      <li class="page-item active">
+        <span class="page-link">
+          Página {{ clientes.number }} de {{ clientes.paginator.num_pages }}
+          <span class="sr-only">(actual)</span>
+        </span>
+      </li>
+  
+      {% if clientes.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ clientes.next_page_number }}" aria-label="Siguiente">
+            Siguiente
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ clientes.paginator.num_pages }}" aria-label="Última">
+            Última &raquo;
+          </a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">
+            Siguiente
+          </span>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            Última &raquo;
+          </span>
+        </li>
+      {% endif %}
+    </ul>
+</nav>
+
 <script>
     const inputTelefono = document.getElementById('input-telefono');
 

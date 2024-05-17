@@ -35,6 +35,65 @@
     </table>
 </div>
 
+<nav aria-label="Navegación de página de proveedores">
+  <ul class="pagination justify-content-center">
+    {% if proveedores.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="Primera">
+          &laquo; Primera
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ proveedores.previous_page_number }}" aria-label="Anterior">
+          Anterior
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">
+          &laquo; Primera
+        </span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">
+          Anterior
+        </span>
+      </li>
+    {% endif %}
+
+    <li class="page-item active">
+      <span class="page-link">
+        Página {{ proveedores.number }} de {{ proveedores.paginator.num_pages }}
+        <span class="sr-only">(actual)</span>
+      </span>
+    </li>
+
+    {% if proveedores.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ proveedores.next_page_number }}" aria-label="Siguiente">
+          Siguiente
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ proveedores.paginator.num_pages }}" aria-label="Última">
+          Última &raquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">
+          Siguiente
+        </span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">
+          Última &raquo;
+        </span>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
 <script>
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {

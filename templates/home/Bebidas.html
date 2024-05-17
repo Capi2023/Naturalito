@@ -10,7 +10,7 @@
             <a href="{% url 'categoria_nueva' %}" class="btn btn-outline-info mx-2"> Nueva categoría de bebida </a>
         </div>
         <div class="input-group" style="max-width: 350px;">
-            <input type="text" class="form-control" placeholder=" Buscar por nombre" aria-label="Buscar por nombre" aria-describedby="buscar-bebida" id="input-nombre" style="padding: 0px;"> <!-- Agregado el atributo id para facilitar la selección -->
+            <input type="text" class="form-control" placeholder=" Buscar por nombre" aria-label="Buscar por nombre" aria-describedby="buscar-bebida" id="input-nombre" style="padding: 0px;">
             <button class="btn btn-outline-secondary" type="button" id="buscar-bebida">Buscar</button>
         </div>
     </div>
@@ -50,6 +50,57 @@
     </table>
 </div>
 
+<nav aria-label="Navegación de página de bebidas">
+  <ul class="pagination justify-content-center">
+    {% if bebidas.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page=1" aria-label="Primera">
+          &laquo; Primera
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ bebidas.previous_page_number }}" aria-label="Anterior">
+          Anterior
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&laquo; Primera</span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">Anterior</span>
+      </li>
+    {% endif %}
+
+    <li class="page-item active">
+      <span class="page-link">
+        Página {{ bebidas.number }} de {{ bebidas.paginator.num_pages }}
+        <span class="sr-only">(actual)</span>
+      </span>
+    </li>
+
+    {% if bebidas.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ bebidas.next_page_number }}" aria-label="Siguiente">
+          Siguiente
+        </a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ bebidas.paginator.num_pages }}" aria-label="Última">
+          Última &raquo;
+        </a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Siguiente</span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">Última &raquo;</span>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+
 <script>
     const inputNombre = document.getElementById('input-nombre');
 
@@ -80,3 +131,6 @@
 </script>
 
 {% endblock content %}
+
+
+

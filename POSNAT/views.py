@@ -15,6 +15,7 @@ from datetime import timedelta
 from django.http import HttpResponse
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from django.core.paginator import Paginator
 
 
 def prueba(request):
@@ -53,8 +54,13 @@ def recetas(request):
 
 
 def clientes(request):
-    clientes = Cliente.objects.all()
-    return render(request, "home/Clientes.html", {'clientes':clientes})
+    clientes_list = Cliente.objects.all()
+    paginator = Paginator(clientes_list, 10)
+
+    page_number = request.GET.get('page')
+    clientes = paginator.get_page(page_number)
+
+    return render(request, "home/Clientes.html", {'clientes': clientes})
 
 
 def clientes_nuevo(request):
@@ -91,7 +97,12 @@ def eliminar_cliente(request, cliente_id):
 
 
 def proveedores(request):
-    proveedores = Proveedor.objects.all()
+    proveedores_list = Proveedor.objects.all()
+    paginator = Paginator(proveedores_list, 10)
+
+    page_number = request.GET.get('page')
+    proveedores = paginator.get_page(page_number)
+
     return render(request, "home/Proveedores.html", {'proveedores': proveedores})
 
 
@@ -130,7 +141,12 @@ def proveedores_eliminar(request, proveedor_id):
 
 
 def inventario(request):
-    ingredientes = Ingrediente.objects.all()
+    ingredientes_list = Ingrediente.objects.all()  # Obtenemos todos los ingredientes
+    paginator = Paginator(ingredientes_list, 5)  # Creamos un Paginator, 5 ingredientes por página
+
+    page_number = request.GET.get('page')  # Obtenemos el número de página de los parámetros de la URL
+    ingredientes = paginator.get_page(page_number)  # Obtenemos la página correspondiente
+
     return render(request, "home/Inventario.html", {'ingredientes': ingredientes})
 
 
@@ -247,8 +263,13 @@ def tipo_nuevo(request):
 
 
 def bebidas(request):
-    bebidas = Bebida.objects.all()
-    return render(request, 'home/Bebidas.html', {'bebidas': bebidas})
+    bebidas_list = Bebida.objects.all()
+    paginator = Paginator(bebidas_list, 5)
+
+    page_number = request.GET.get('page')
+    bebidas = paginator.get_page(page_number)
+
+    return render(request, "home/Bebidas.html", {'bebidas': bebidas})
 
 
 def bebida_nueva(request):

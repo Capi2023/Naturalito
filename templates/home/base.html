@@ -78,10 +78,36 @@
             background-color: lightblue;
         }
 
-        /* Centrar imágenes en las tablas */
         table img {
         display: block;
         margin: 0 auto;
+        }
+        
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .pagination .step-links {
+            display: inline-block;
+        }
+        
+        .pagination .step-links a {
+            color: black;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 2px;
+        }
+        
+        .pagination .step-links a:hover {
+            border-color: #007bff;
+        }
+        
+        .pagination .current {
+            padding: 5px 10px;
+            margin: 0 2px;
+            color: red;
         }
 
     </style>
