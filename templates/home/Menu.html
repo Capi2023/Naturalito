@@ -1,7 +1,6 @@
 {% extends "home/base.html" %}
 
 {% block content %}
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -9,65 +8,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú Principal</title>
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <style>
         h1 {
             text-align: center;
+            margin-bottom: 30px;
         }
         .custom-btn {
             height: 195px;
-            width: 200px; 
-            line-height: 22;
+            width: 100%;
+            background-size: contain; /* Ajustar sin cortar */
+            background-repeat: no-repeat; /* No repetir la imagen */
+            background-position: center; /* Centrar la imagen */
+            border: 1px solid #ccc; /* Estilo adicional para destacar el botón */
         }
         .text-title {
             font-size: 24px;
             font-weight: bold;
             color: #333;
+            text-align: center;
+            margin-top: 10px; /* Espacio entre el botón y el texto */
+        }
+        .menu-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .menu-item {
+            flex-basis: 100%; /* Ocupa todo el ancho en pantallas muy pequeñas */
+        }
+        @media (min-width: 576px) { /* Pantallas pequeñas y más grandes */
+            .menu-item {
+                flex-basis: 50%; /* Dos elementos por fila */
+            }
+        }
+        @media (min-width: 768px) { /* Pantallas medianas y más grandes */
+            .menu-item {
+                flex-basis: 32%; /* Tres elementos por fila */
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mt-5 table-responsive">
+    <div class="container sm">
         <h1>Menú Principal</h1>
-        <table class="table table-borderless">
-            <tbody>
-                <tr>
-                    <td class="text-center">
-                        <a href="{% url 'ordenes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/ordenes.png' %}'); background-size: cover;"></a>
-                    </td>
-                        <td class="text-center">
-                        <a href="{% url 'clientes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/cliente.png' %}'); background-size: cover;"></a>
-                    </td>
-                    <td class="text-center">
-                        <a href="{% url 'proveedores' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/1198280.png' %}'); background-size: cover;"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-center text-title">Ordenes</td> 
-                    <td class="text-center text-title">Clientes</td>
-                    <td class="text-center text-title">Proveedores</td>
-                </tr>
-            </tbody>
-        </table>
-        <table class="table table-borderless">
-            <tbody>
-                <tr>
-                    <td class="text-center">
-                        <a href="{% url 'inventario' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/inventario.png' %}'); background-size: cover;"></a>
-                    </td>
-                        <td class="text-center">
-                        <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/repo.png' %}'); background-size: cover;"></a>
-                    </td>
-                    <td class="text-center">
-                        <a href="{% url 'bebidas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/coffee.png' %}'); background-size: cover;"></a>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="text-center text-title">Inventario</td> 
-                    <td class="text-center text-title">Reportes</td>
-                    <td class="text-center text-title">Bebidas</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="menu-container">
+            <div class="menu-item">
+                <a href="{% url 'ordenes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/ordenes.png' %}');"></a>
+                <div class="text-title">Ordenes</div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'clientes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/cliente.png' %}');"></a>
+                <div class="text-title">Clientes</div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'proveedores' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/1198280.png' %}');"></a>
+                <div class="text-title">Proveedores</div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'inventario' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/inventario.png' %}');"></a>
+                <div class="text-title">Inventario</div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/repo.png' %}');"></a>
+                <div class="text-title">Reportes</div>
+            </div>
+            <div class="menu-item">
+                <a href="{% url 'bebidas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/coffee.png' %}');"></a>
+                <div class="text-title">Bebidas</div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
