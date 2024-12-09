@@ -8,33 +8,177 @@
     <title>Punto de venta - Naturalito</title>
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <style>
-        body {
-            background-color: #f8f9fa;
+        :root {
+            --font-size: 16px;
+            --background-color: #f8f9fa;
+            --text-color: #000000;
+            --navbar-bg-color: #343a40;
+            --navbar-text-color: #ffffff;
+            --button-bg-color: initial; /* Usamos colores predeterminados */
+            --button-text-color: initial;
+            --button-border-color: initial;
+            /* Variables nuevas */
+            --container-bg-color: #ffffff; /* Color de fondo para .container */
+            --color-background-bg-color: #B4CFEC; /* Color de fondo para .color-background */
+            --table-bg-color: #ffffff; /* Color de fondo de la tabla */
+            --table-text-color: #000000; /* Color de texto de la tabla */
+            --table-border-color: #dee2e6; /* Color de bordes de la tabla */
+            --table-striped-bg-color: #f8f9fa; /* Color de fondo para filas striped */
+            --table-header-bg-color: #e9ecef; /* Color de fondo para encabezados de tabla */
+            --card-bg-color: #ffffff;       /* Color de fondo por defecto de las tarjetas */
+            --card-text-color: #000000;     /* Color de texto por defecto de las tarjetas */
+            --card-border-color: #CFCFCF;
+            --input-bg-color: #ffffff;        /* Color de fondo por defecto para inputs */
+            --input-text-color: #000000;      /* Color de texto por defecto para inputs */
+            --input-border-color: #ced4da;    /* Color de borde por defecto para inputs */
+            --font-size: 16px;
+            --letter-spacing: normal; /* Valor por defecto */
+            --default-font: sans-serif;
+            --dyslexia-font: 'OpenDyslexic', sans-serif;
+            --current-font: var(--default-font);
         }
 
+        @font-face {
+            font-family: 'OpenDyslexic';
+            src: url("{% static 'fonts/OpenDyslexic/OpenDyslexic3-Regular.ttf' %}") format("truetype");
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+
+        #accessibility-panel {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            background: #B4CFEC;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index:9999;
+            max-width: 300px;
+            color: #ffffff !important; /* Usa color en vez de text-color */
+        }
+        
+
+        .big-cursor {
+            cursor: url('{% static 'images/cursor_gra.png' %}');
+        }
+        
+        #reading-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+            display: none; 
+            z-index: 9998;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            font-size: var(--font-size);
+            color: var(--text-color);
+            cursor: url("{% static 'images/cursor_gra.png' %}"), auto;
+            letter-spacing: var(--letter-spacing);
+            line-height: var(--line-height);
+            font-family: var(--current-font);
+        }
+        
+
+        /* Asegúrate de que todos los elementos de texto utilicen las variables */
+        h1, h2, h3, h4, h5, h6,
+        p, a, li, td, th, button, input, label, span, div,
+        .btn, .btn-outline-dark, .custom-btn, .text-title {
+            color: var(--text-color) !important;
+        }
+
+        /* Ajuste de tamaños para encabezados */
+        h1 {
+            font-size: calc(var(--font-size) * 2.5); /* Ajusta el factor según prefieras */
+            color: var(--text-color);
+        }
+        h2 {
+            font-size: calc(var(--font-size) * 2);
+            color: var(--text-color);
+        }
+        h3 {
+            font-size: calc(var(--font-size) * 1.75);
+            color: var(--text-color);
+        }
+        h4 {
+            font-size: calc(var(--font-size) * 1.5);
+            color: var(--text-color);
+        }
+        h5 {
+            font-size: calc(var(--font-size) * 1.25);
+            color: var(--text-color);
+        }
+        h6 {
+            font-size: var(--font-size);
+            color: var(--text-color);
+        }
+        /* Aplicar el tamaño de fuente base a otros elementos */
+        p, a, li, td, th, button, input, label, span, div {
+            font-size: var(--font-size);
+            color: var(--text-color);
+        }
+
+        /* Estilos del navbar */
         .navbar {
-            background-color: #343a40;
+            background-color: var(--navbar-bg-color);
         }
 
         .navbar-brand,
         .navbar-nav .nav-link {
-            color: #ffffff !important;
+            color: var(--navbar-text-color) !important;
         }
 
         .navbar-toggler-icon {
             background-color: #ffffff;
         }
 
+        /* Estilos para las tablas */
+        table {
+            background-color: var(--table-bg-color) !important;
+            color: var(--table-text-color) !important;
+            border-color: var(--table-border-color) !important;
+        }
+    
+        table th,
+        table td {
+            background-color: var(--table-bg-color) !important;
+            color: var(--table-text-color) !important;
+            border-color: var(--table-border-color) !important;
+        }
+    
+        table thead th {
+            background-color: var(--table-header-bg-color) !important;
+            color: var(--table-text-color) !important;
+        }
+    
+        table tbody tr:nth-of-type(odd) {
+            background-color: var(--table-striped-bg-color) !important;
+        }
+    
+        table tbody tr:hover {
+            background-color: var(--table-hover-bg-color, #f1f1f1) !important;
+        }
+    
+        table a {
+            color: var(--table-text-color) !important;
+        }
+
+        .color-background {
+            background-color: var(--color-background-bg-color);
+        }
+        
         .container {
-            background-color: #ffffff;
+            background-color: var(--container-bg-color);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-top: 20px;
-        }
-
-        .color-background {
-            background-color: #B4CFEC; 
         }
 
         .otrocolor {
@@ -45,19 +189,19 @@
             width: 100%;
             text-align: center;
         }
-    
+
         .ingrediente-button {
             display: inline-block;
             margin: 5px;
         }
-        
+
         .ingrediente {
             width: calc(20% - 20px);
             margin-right: 20px;
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .ingrediente img {
             max-width: 100%;
             height: auto;
@@ -69,7 +213,7 @@
             border-radius: 5px;
             transition: border-color 0.3s ease;
         }
-        
+
         .boton-imagen:hover {
             border-color: #007bff;
         }
@@ -79,25 +223,25 @@
         }
 
         .ingrediente-card img {
-            width: 100%; /* Asegura que la imagen cubra el ancho del card */
-            height: 100px; /* Altura fija para todas las imágenes */
-            object-fit: cover; /* Mantiene la proporción sin recortar */
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
         }
 
         table img {
-        display: block;
-        margin: 0 auto;
+            display: block;
+            margin: 0 auto;
         }
-        
+
         .pagination {
             text-align: center;
             margin-top: 20px;
         }
-        
+
         .pagination .step-links {
             display: inline-block;
         }
-        
+
         .pagination .step-links a {
             color: black;
             padding: 5px 10px;
@@ -105,35 +249,170 @@
             border: 1px solid #ddd;
             margin: 0 2px;
         }
-        
+
         .pagination .step-links a:hover {
             border-color: #007bff;
         }
-        
+
         .pagination .current {
             padding: 5px 10px;
             margin: 0 2px;
             color: red;
         }
 
+        /* Ajustar los botones para escalar con el tamaño de fuente */
+        button, .btn {
+            font-size: var(--font-size);
+            padding: calc(var(--font-size) * 0.5) calc(var(--font-size) * 1);
+            background-color: var(--button-bg-color);
+            color: var(--button-text-color);
+            border-color: var(--button-border-color);
+        }
+        
+        .btn-sm {
+            font-size: calc(var(--font-size) * 0.875); /* Tamaño de fuente más pequeño */
+            padding: calc(var(--font-size) * 0.25) calc(var(--font-size) * 0.5);
+        }
+        
+        .btn-lg {
+            font-size: calc(var(--font-size) * 1.25); /* Tamaño de fuente más grande */
+            padding: calc(var(--font-size) * 0.75) calc(var(--font-size) * 1.5);
+        }
+
+        .custom-btn {
+            background-size: contain; /* Ajustar sin cortar */
+            background-repeat: no-repeat; /* No repetir la imagen */
+            background-position: center; /* Centrar la imagen */
+            /* Ajustar el tamaño del botón */
+            height: calc(var(--font-size) * 12); /* Ajusta el factor según sea necesario */
+            width: 100%;
+        }
+        
+        /* Estilos para las tarjetas */
+        .card,
+        .card-header,
+        .card-body,
+        .bebida-card {
+            background-color: var(--card-bg-color) !important;
+            color: var(--card-text-color) !important;
+            border: 1px solid var(--card-border-color);
+            border-radius: 0.25rem;
+        }
+        
+
+        /* Estilos para inputs, textareas y selects */
+        input, textarea, select {
+            background-color: var(--input-bg-color) !important;
+            color: var(--input-text-color) !important;
+            border-color: var(--input-border-color) !important;
+        }
+        
+        /* Estilos para los placeholders */
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--input-text-color);
+            opacity: 0.6; /* Ajusta la opacidad según prefieras */
+        }
+
+        .dropdown-menu {
+            background-color: var(--dropdown-bg-color, #ffffff) !important; /* Fondo del dropdown */
+            color: var(--dropdown-text-color, #111111) !important; /* Color del texto */
+        }
+        
+        .dropdown-item {
+            color: var(--dropdown-text-color, #111111) !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #333333 !important; /* Color al hacer hover en alto contraste */
+            color: #ffffff !important;
+        }
+
+        /* Modo de alto contraste */
+        .high-contrast {
+            --background-color: #111111;
+            --text-color: #ffffff;
+            --button-bg-color: #111111;
+            --button-text-color: #ffffff;
+            --button-border-color: #ffffff;
+            --container-bg-color: #111111; /* Fondo negro para .container */
+            --color-background-bg-color: #111111; /* Fondo negro para .color-background */
+            --table-bg-color: #111111; /* Fondo negro para tablas */
+            --table-text-color: #ffffff; /* Texto blanco */
+            --table-border-color: #ffffff; /* Bordes blancos */
+            --table-striped-bg-color: #1a1a1a; /* Fondo para filas striped en alto contraste */
+            --table-header-bg-color: #111111; /* Fondo negro para encabezados */
+            --table-hover-bg-color: #333333; /* Color para hover en tablas */
+            --card-bg-color: #111111;       /* Fondo negro para las tarjetas en alto contraste */
+            --card-text-color: #ffffff;     /* Texto blanco para las tarjetas en alto contraste */
+            --card-border-color: #CFCFCF;
+            /* ... otras variables ... */
+            --input-bg-color: #111111;        /* Fondo negro para inputs en alto contraste */
+            --input-text-color: #ffffff;      /* Texto blanco para inputs en alto contraste */
+            --input-border-color: #ffffff;    /* Borde blanco para inputs en alto contraste */
+            --dropdown-bg-color: #111111; /* Fondo negro */
+            --dropdown-text-color: #ffffff; /* Texto blanco */
+        }
+        #shortcuts-help {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 200px;
+            z-index: 9999;
+        }
+        #shortcuts-help h6 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        #shortcuts-help ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #shortcuts-help li {
+            margin-bottom: 2px;
+        }
+        
+
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Incluye jQuery si aún no lo has hecho -->
 </head>
+<!-- Añade esto justo antes del </body> -->
+<div id="shortcuts-help">
+    <h6>Atajos (Alt + ...):</h6>
+    <ul>
+        <li><strong>c</strong>: Alto Contraste</li>
+        <li><strong>t</strong>: Lector de Pantalla</li>
+        <li><strong>m</strong>: Máscara de Lectura</li>
+    </ul>
+</div>
 
 <body class="color-background">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'menu' %}">Naturalito</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Otros elementos del menú -->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'inventario' %}">Inventario</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'ordenes' %}">Orden</a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- Botón para mostrar/ocultar el panel de accesibilidad -->
+                        <button id="toggleAccessibilityPanel" class="btn btn-outline-secondary btn-sm">Accesibilidad</button>
                     </li>
                 </ul>
             </div>
@@ -144,16 +423,314 @@
         {% block content %}
         {% endblock content %}
     </div>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-    <script src="{% static 'js/bootstrap.js' %}"></script>
+
+    <!-- Panel de accesibilidad flotante -->
+    <div id="accessibility-panel">
+        <h5>Accesibilidad</h5>
+        <div class="mb-2">
+            <strong>Modo Alto Contraste:</strong><br>
+            <button id="toggleContrast" class="btn btn-sm btn-outline-info">Alto Contraste</button>
+        </div>
+        <div class="mb-2">
+            <strong>Tamaño de Letra:</strong><br>
+            <button class="btn btn-sm btn-outline-dark font-size-option" data-size="12">Chico</button>
+            <button class="btn btn-sm btn-outline-dark font-size-option" data-size="16">Normal</button>
+            <button class="btn btn-sm btn-outline-dark font-size-option" data-size="20">Grande</button>
+            <button class="btn btn-sm btn-outline-dark font-size-option" data-size="24">Extra Grande</button>
+        </div>
+        <div class="mb-2">
+            <strong>Cursor Grande:</strong><br>
+            <button id="toggleCursorSize" class="btn btn-sm btn-outline-dark">Cursor Grande</button>
+        </div>
+        <div class="mb-2">
+            <strong>Máscara de Lectura:</strong><br>
+            <button id="toggleReadingMask" class="btn btn-sm btn-outline-dark">Activar Máscara</button>
+        </div>
+        <div class="mb-2">
+            <strong>Espaciado de Letras:</strong><br>
+            <button class="btn btn-sm btn-outline-dark letter-spacing-option" data-spacing="0px">Normal</button>
+            <button class="btn btn-sm btn-outline-dark letter-spacing-option" data-spacing="1px">Grande</button>
+            <button class="btn btn-sm btn-outline-dark letter-spacing-option" data-spacing="2px">Muy Grande</button>
+            <button class="btn btn-sm btn-outline-dark letter-spacing-option" data-spacing="3px">Extra Grande</button>
+        </div>
+        <div class="mb-2">
+            <strong>Espaciado Vertical:</strong><br>
+            <button class="btn btn-sm btn-outline-dark line-height-option" data-line-height="normal">Normal</button>
+            <button class="btn btn-sm btn-outline-dark line-height-option" data-line-height="1.5">Grande</button>
+            <button class="btn btn-sm btn-outline-dark line-height-option" data-line-height="2">Muy Grande</button>
+            <button class="btn btn-sm btn-outline-dark line-height-option" data-line-height="2.5">Extra Grande</button>
+        </div>
+        <div class="mb-2">
+            <strong>Lector de Pantalla:</strong><br>
+            <button id="toggleScreenReader" class="btn btn-sm btn-outline-dark">Activar Lector</button>
+        </div>
+        <div class="mb-2">
+            <strong>Fuente Dislexia:</strong><br>
+            <button id="toggleDyslexiaFont" class="btn btn-sm btn-outline-dark">Activar Fuente Dislexia</button>
+        </div>
+        
+    </div>
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" crossorigin="anonymous"></script>
     <script>
-        // Activa el comportamiento de cierre de las alertas
-        var alertList = document.querySelectorAll('.alert')
-        alertList.forEach(function (alert) {
-            new bootstrap.Alert(alert)
-        })
+        document.addEventListener('DOMContentLoaded', () => {
+            let isScreenReaderOn = false;
+            const savedScreenReader = localStorage.getItem('screenReader');
+            if (savedScreenReader === 'true') {
+                isScreenReaderOn = true;
+            }
+
+            const root = document.documentElement;
+            const body = document.body;
+            
+            let fontSize = 16;
+            let isHighContrast = false;
+            let isBigCursor = false;
+            let isReadingMask = false;
+
+            let letterSpacing = 'normal';
+            let lineHeight = 'normal'; // Nueva variable para espaciado vertical
+
+            const savedFontSize = localStorage.getItem('fontSize');
+            const savedContrastMode = localStorage.getItem('contrastMode');
+            const savedCursor = localStorage.getItem('bigCursor');
+            const savedReadingMask = localStorage.getItem('readingMask');
+            const savedLetterSpacing = localStorage.getItem('letterSpacing');
+            const savedLineHeight = localStorage.getItem('lineHeight'); // Nuevo
+
+            if (savedFontSize) {
+                fontSize = parseInt(savedFontSize);
+                root.style.setProperty('--font-size', fontSize + 'px');
+            }
+
+            if (savedContrastMode === 'high') {
+                body.classList.add('high-contrast');
+                isHighContrast = true;
+            }
+
+            if (savedCursor === 'true') {
+                body.classList.add('big-cursor');
+                isBigCursor = true;
+            }
+
+            if (savedReadingMask === 'true') {
+                isReadingMask = true;
+            }
+
+            if (savedLetterSpacing) {
+                letterSpacing = savedLetterSpacing;
+                root.style.setProperty('--letter-spacing', letterSpacing);
+            }
+
+            if (savedLineHeight) {
+                lineHeight = savedLineHeight;
+                root.style.setProperty('--line-height', lineHeight);
+            }
+
+            const toggleContrastLink = document.getElementById('toggleContrast');
+            toggleContrastLink.addEventListener('click', event => {
+                event.preventDefault();
+                body.classList.toggle('high-contrast');
+                isHighContrast = body.classList.contains('high-contrast');
+                localStorage.setItem('contrastMode', isHighContrast ? 'high' : 'normal');
+            });
+
+            document.querySelectorAll('.font-size-option').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    fontSize = parseInt(event.currentTarget.getAttribute('data-size'));
+                    root.style.setProperty('--font-size', fontSize + 'px');
+                    localStorage.setItem('fontSize', fontSize);
+                });
+            });
+
+            const toggleCursorBtn = document.getElementById('toggleCursorSize');
+            toggleCursorBtn.addEventListener('click', event => {
+                event.preventDefault();
+                body.classList.toggle('big-cursor');
+                isBigCursor = body.classList.contains('big-cursor');
+                localStorage.setItem('bigCursor', isBigCursor);
+            });
+
+            const accessibilityPanel = document.getElementById('accessibility-panel');
+            const togglePanelBtn = document.getElementById('toggleAccessibilityPanel');
+            let panelVisible = false;
+            togglePanelBtn.addEventListener('click', () => {
+                panelVisible = !panelVisible;
+                accessibilityPanel.style.display = panelVisible ? 'block' : 'none';
+            });
+
+            accessibilityPanel.style.display = 'none';
+
+            const toggleReadingMaskBtn = document.getElementById('toggleReadingMask');
+            const readingMaskDiv = document.getElementById('reading-mask');
+            let mouseMoveHandler = null;
+
+            function updateMaskPosition(e) {
+                const lineHeightMask = 50; 
+                const halfHeight = lineHeightMask / 2;
+                const mouseY = e.clientY;
+                const topClear = mouseY - halfHeight;
+                const bottomClear = mouseY + halfHeight;
+
+                const gradient = `linear-gradient(to bottom, 
+                    rgba(0,0,0,0.3) 0%, 
+                    rgba(0,0,0,0.3) ${topClear}px, 
+                    transparent ${topClear}px, 
+                    transparent ${bottomClear}px, 
+                    rgba(0,0,0,0.3) ${bottomClear}px, 
+                    rgba(0,0,0,0.3) 100%)`;
+
+                readingMaskDiv.style.background = gradient;
+            }
+
+            function activateReadingMask() {
+                toggleReadingMaskBtn.textContent = "Desactivar Máscara";
+                readingMaskDiv.style.display = 'block';
+                mouseMoveHandler = updateMaskPosition;
+                document.addEventListener('mousemove', mouseMoveHandler);
+                isReadingMask = true;
+                localStorage.setItem('readingMask', 'true');
+            }
+
+            function deactivateReadingMask() {
+                toggleReadingMaskBtn.textContent = "Activar Máscara";
+                readingMaskDiv.style.display = 'none';
+                if (mouseMoveHandler) {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    mouseMoveHandler = null;
+                }
+                isReadingMask = false;
+                localStorage.setItem('readingMask', 'false');
+            }
+
+            toggleReadingMaskBtn.addEventListener('click', event => {
+                event.preventDefault();
+                if (isReadingMask) {
+                    deactivateReadingMask();
+                } else {
+                    activateReadingMask();
+                }
+            });
+
+            if (isReadingMask) {
+                activateReadingMask();
+            }
+
+            // Espaciado de letras
+            document.querySelectorAll('.letter-spacing-option').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    const spacing = event.currentTarget.getAttribute('data-spacing');
+                    root.style.setProperty('--letter-spacing', spacing);
+                    localStorage.setItem('letterSpacing', spacing);
+                });
+            });
+
+            // Espaciado vertical (line-height)
+            document.querySelectorAll('.line-height-option').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    const lh = event.currentTarget.getAttribute('data-line-height');
+                    root.style.setProperty('--line-height', lh);
+                    localStorage.setItem('lineHeight', lh);
+                });
+            });
+            function readText(text) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                window.speechSynthesis.speak(utterance);
+            }
+            function mouseOverHandler(e) {
+                const target = e.target;
+                const targetText = target.innerText || target.getAttribute('aria-label') || target.getAttribute('data-describe');
+                if (targetText && targetText.trim() !== '') {
+                    readText(targetText.trim());
+                }
+            }
+            function activateScreenReader() {
+                toggleScreenReaderBtn.textContent = "Desactivar Lector";
+                document.addEventListener('mouseover', mouseOverHandler);
+                isScreenReaderOn = true;
+                localStorage.setItem('screenReader', 'true');
+            }
+            
+            function deactivateScreenReader() {
+                toggleScreenReaderBtn.textContent = "Activar Lector";
+                document.removeEventListener('mouseover', mouseOverHandler);
+                // Detener el habla inmediatamente
+                window.speechSynthesis.cancel();
+                isScreenReaderOn = false;
+                localStorage.setItem('screenReader', 'false');
+            }
+            
+            const toggleScreenReaderBtn = document.getElementById('toggleScreenReader');
+            toggleScreenReaderBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isScreenReaderOn) {
+                    deactivateScreenReader();
+                } else {
+                    activateScreenReader();
+                }
+            });
+
+            // Si al cargar estaba activo, lo activamos
+            if (isScreenReaderOn) {
+                activateScreenReader();
+            }
+            function activateDyslexiaFont() {
+                root.style.setProperty('--current-font', 'var(--dyslexia-font)');
+                localStorage.setItem('dyslexiaFont', 'true');
+                isDyslexiaFontOn = true;
+                toggleDyslexiaFontBtn.textContent = "Desactivar Fuente Dislexia";
+            }
+            
+            function deactivateDyslexiaFont() {
+                root.style.setProperty('--current-font', 'var(--default-font)');
+                localStorage.setItem('dyslexiaFont', 'false');
+                isDyslexiaFontOn = false;
+                toggleDyslexiaFontBtn.textContent = "Activar Fuente Dislexia";
+            }
+            const toggleDyslexiaFontBtn = document.getElementById('toggleDyslexiaFont');
+            toggleDyslexiaFontBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isDyslexiaFontOn) {
+                    deactivateDyslexiaFont();
+                } else {
+                    activateDyslexiaFont();
+                }
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (!e.altKey) return; // Si no está presionando ALT, no hacemos nada
+            
+                switch(e.key) {
+                    case "c": // Alto Contraste (ya existente)
+                        document.body.classList.toggle("high-contrast");
+                        localStorage.setItem('contrastMode', document.body.classList.contains('high-contrast') ? 'high' : 'normal');
+                        break;
+            
+                    case "t": // Lector de Pantalla
+                        if (isScreenReaderOn) {
+                            deactivateScreenReader();
+                        } else {
+                            activateScreenReader();
+                        }
+                        break;
+            
+                    case "m": // Máscara de lectura
+                        if (isReadingMask) {
+                            deactivateReadingMask();
+                        } else {
+                            activateReadingMask();
+                        }
+                        break;
+                }
+            });
+            
+            
+        });
     </script>
+    <div id="reading-mask"></div>
+
 </body>
-
 </html>
-

@@ -67,16 +67,16 @@ WSGI_APPLICATION = 'POS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mibase',
+        'NAME': 'base_cafe',
         'USER': 'postgres',
         'PASSWORD': 'Emoliano13',
         'HOST': 'localhost',
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
 
 
-DATABASES["default"] = dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
+#DATABASES["default"] = dj_database_url.parse("postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render")
 
 
 # postgres://base_de_datos_render_user:6pcwJWDINtBMsxeldw7PxDuNQdzPFoeC@dpg-cou1afol6cac73cakfj0-a.oregon-postgres.render.com/base_de_datos_render

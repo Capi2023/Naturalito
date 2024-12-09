@@ -44,7 +44,7 @@
                     <label class="form-label">Seleccionar Bebida</label>
                     <div id="bebidas-container" class="d-flex flex-wrap">
                         {% for bebida in bebidas %}
-                        <div class="card m-2 bebida-card" style="width: 100px;" data-bebida-id="{{ bebida.id }}" data-bebida-nombre="{{ bebida.nombre }}">
+                        <div class="card m-2 bebida-card" data-bebida-id="{{ bebida.id }}" data-bebida-nombre="{{ bebida.nombre }}">
                             <img src="{{ bebida.imagen.url }}" class="card-img-top" alt="{{ bebida.nombre }}">
                             <div class="card-body text-center">
                                 <p class="card-text">{{ bebida.nombre }}</p>

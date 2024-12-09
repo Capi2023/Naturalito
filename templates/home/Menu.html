@@ -2,86 +2,81 @@
 
 {% block content %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Principal</title>
-    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <style>
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .custom-btn {
-            height: 195px;
-            width: 100%;
-            background-size: contain; /* Ajustar sin cortar */
-            background-repeat: no-repeat; /* No repetir la imagen */
-            background-position: center; /* Centrar la imagen */
-            border: 1px solid #ccc; /* Estilo adicional para destacar el botón */
-        }
-        .text-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            margin-top: 10px; /* Espacio entre el botón y el texto */
-        }
-        .menu-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
+<style>
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: calc(var(--font-size) * 2.5);
+        color: var(--text-color);
+    }
+    .custom-btn {
+        font-size: var(--font-size);
+        padding: calc(var(--font-size) * 0.5) calc(var(--font-size) * 1);
+        height: calc(var(--font-size) * 12);
+        width: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        border: 1px solid var(--button-border-color, #ccc);
+        background-color: var(--button-bg-color);
+        color: var(--button-text-color);
+    }
+    .text-title {
+        font-size: calc(var(--font-size) * 1.5);
+        font-weight: bold;
+        color: var(--text-color);
+        text-align: center;
+        margin-top: 10px;
+    }
+    .menu-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+    .menu-item {
+        flex-basis: 100%;
+    }
+    @media (min-width: 576px) {
         .menu-item {
-            flex-basis: 100%; /* Ocupa todo el ancho en pantallas muy pequeñas */
+            flex-basis: 50%;
         }
-        @media (min-width: 576px) { /* Pantallas pequeñas y más grandes */
-            .menu-item {
-                flex-basis: 50%; /* Dos elementos por fila */
-            }
+    }
+    @media (min-width: 768px) {
+        .menu-item {
+            flex-basis: 32%;
         }
-        @media (min-width: 768px) { /* Pantallas medianas y más grandes */
-            .menu-item {
-                flex-basis: 32%; /* Tres elementos por fila */
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container sm">
-        <h1>Menú Principal</h1>
-        <div class="menu-container">
-            <div class="menu-item">
-                <a href="{% url 'ordenes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/ordenes.png' %}');"></a>
-                <div class="text-title">Ordenes</div>
-            </div>
-            <div class="menu-item">
-                <a href="{% url 'clientes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/cliente.png' %}');"></a>
-                <div class="text-title">Clientes</div>
-            </div>
-            <div class="menu-item">
-                <a href="{% url 'proveedores' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/1198280.png' %}');"></a>
-                <div class="text-title">Proveedores</div>
-            </div>
-            <div class="menu-item">
-                <a href="{% url 'inventario' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/inventario.png' %}');"></a>
-                <div class="text-title">Inventario</div>
-            </div>
-            <div class="menu-item">
-                <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/repo.png' %}');"></a>
-                <div class="text-title">Reportes</div>
-            </div>
-            <div class="menu-item">
-                <a href="{% url 'bebidas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/coffee.png' %}');"></a>
-                <div class="text-title">Bebidas</div>
-            </div>
+    }
+</style>
+<div class="container sm">
+    <h1>Menú Principal</h1>
+    <div class="menu-container">
+        <div class="menu-item">
+            <a href="{% url 'ordenes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/ordenes.png' %}');"></a>
+            <div class="text-title">Ordenes</div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'clientes' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/cliente.png' %}');"></a>
+            <div class="text-title">Clientes</div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'proveedores' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/1198280.png' %}');"></a>
+            <div class="text-title">Proveedores</div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'inventario' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/inventario.png' %}');"></a>
+            <div class="text-title">Inventario</div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'reporte_ventas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/repo.png' %}');"></a>
+            <div class="text-title">Reportes</div>
+        </div>
+        <div class="menu-item">
+            <a href="{% url 'bebidas' %}" class="btn btn-outline-dark custom-btn" style="background-image: url('{% static 'images/coffee.png' %}');"></a>
+            <div class="text-title">Bebidas</div>
         </div>
     </div>
-</body>
-</html>
+</div>
 {% endblock content %}
 
 
