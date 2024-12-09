@@ -34,17 +34,7 @@
             --font-size: 16px;
             --letter-spacing: normal; /* Valor por defecto */
             --default-font: sans-serif;
-            --dyslexia-font: 'OpenDyslexic', sans-serif;
-            --current-font: var(--default-font);
-        }
-
-        @font-face {
-            font-family: 'OpenDyslexic';
-            src: url("{% static 'fonts/OpenDyslexic/OpenDyslexic3-Regular.ttf' %}") format("truetype");
-            font-weight: normal;
-            font-style: normal;
-        }
-        
+        } 
 
         #accessibility-panel {
             position: fixed;
@@ -57,11 +47,6 @@
             z-index:9999;
             max-width: 300px;
             color: #ffffff !important; /* Usa color en vez de text-color */
-        }
-        
-
-        .big-cursor {
-            cursor: url('{% static 'images/cursor_gra.png' %}');
         }
         
         #reading-mask {
@@ -79,10 +64,8 @@
             background-color: var(--background-color);
             font-size: var(--font-size);
             color: var(--text-color);
-            cursor: url("{% static 'images/cursor_gra.png' %}"), auto;
             letter-spacing: var(--letter-spacing);
             line-height: var(--line-height);
-            font-family: var(--current-font);
         }
         
 
@@ -439,10 +422,6 @@
             <button class="btn btn-sm btn-outline-dark font-size-option" data-size="24">Extra Grande</button>
         </div>
         <div class="mb-2">
-            <strong>Cursor Grande:</strong><br>
-            <button id="toggleCursorSize" class="btn btn-sm btn-outline-dark">Cursor Grande</button>
-        </div>
-        <div class="mb-2">
             <strong>Máscara de Lectura:</strong><br>
             <button id="toggleReadingMask" class="btn btn-sm btn-outline-dark">Activar Máscara</button>
         </div>
@@ -464,11 +443,6 @@
             <strong>Lector de Pantalla:</strong><br>
             <button id="toggleScreenReader" class="btn btn-sm btn-outline-dark">Activar Lector</button>
         </div>
-        <div class="mb-2">
-            <strong>Fuente Dislexia:</strong><br>
-            <button id="toggleDyslexiaFont" class="btn btn-sm btn-outline-dark">Activar Fuente Dislexia</button>
-        </div>
-        
     </div>
 
     <script src="{% static 'js/bootstrap.bundle.min.js' %}" crossorigin="anonymous"></script>
@@ -485,7 +459,6 @@
             
             let fontSize = 16;
             let isHighContrast = false;
-            let isBigCursor = false;
             let isReadingMask = false;
 
             let letterSpacing = 'normal';
@@ -493,7 +466,6 @@
 
             const savedFontSize = localStorage.getItem('fontSize');
             const savedContrastMode = localStorage.getItem('contrastMode');
-            const savedCursor = localStorage.getItem('bigCursor');
             const savedReadingMask = localStorage.getItem('readingMask');
             const savedLetterSpacing = localStorage.getItem('letterSpacing');
             const savedLineHeight = localStorage.getItem('lineHeight'); // Nuevo
@@ -506,11 +478,6 @@
             if (savedContrastMode === 'high') {
                 body.classList.add('high-contrast');
                 isHighContrast = true;
-            }
-
-            if (savedCursor === 'true') {
-                body.classList.add('big-cursor');
-                isBigCursor = true;
             }
 
             if (savedReadingMask === 'true') {
@@ -542,14 +509,6 @@
                     root.style.setProperty('--font-size', fontSize + 'px');
                     localStorage.setItem('fontSize', fontSize);
                 });
-            });
-
-            const toggleCursorBtn = document.getElementById('toggleCursorSize');
-            toggleCursorBtn.addEventListener('click', event => {
-                event.preventDefault();
-                body.classList.toggle('big-cursor');
-                isBigCursor = body.classList.contains('big-cursor');
-                localStorage.setItem('bigCursor', isBigCursor);
             });
 
             const accessibilityPanel = document.getElementById('accessibility-panel');
@@ -677,28 +636,7 @@
             if (isScreenReaderOn) {
                 activateScreenReader();
             }
-            function activateDyslexiaFont() {
-                root.style.setProperty('--current-font', 'var(--dyslexia-font)');
-                localStorage.setItem('dyslexiaFont', 'true');
-                isDyslexiaFontOn = true;
-                toggleDyslexiaFontBtn.textContent = "Desactivar Fuente Dislexia";
-            }
             
-            function deactivateDyslexiaFont() {
-                root.style.setProperty('--current-font', 'var(--default-font)');
-                localStorage.setItem('dyslexiaFont', 'false');
-                isDyslexiaFontOn = false;
-                toggleDyslexiaFontBtn.textContent = "Activar Fuente Dislexia";
-            }
-            const toggleDyslexiaFontBtn = document.getElementById('toggleDyslexiaFont');
-            toggleDyslexiaFontBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (isDyslexiaFontOn) {
-                    deactivateDyslexiaFont();
-                } else {
-                    activateDyslexiaFont();
-                }
-            });
 
             document.addEventListener("keydown", (e) => {
                 if (!e.altKey) return; // Si no está presionando ALT, no hacemos nada
